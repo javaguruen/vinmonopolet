@@ -5,7 +5,7 @@ import javax.ws.rs.{GET, Path, Produces}
 
 import com.codahale.metrics.annotation.Timed
 import no.hamre.polet.dao.ProductDao
-import no.hamre.polet.modell.Product
+import no.hamre.polet.modell.ProductLine
 import no.hamre.polet.parser.CharsetConverter
 
 import scala.io.Source
@@ -33,7 +33,7 @@ class ProductResource(dao: ProductDao) {
       .getLines().toList
     products.tail
       .map(l => CharsetConverter(l))
-      .map(l=>Product(l.split(";")))
+      .map(l=>ProductLine(l.split(";")))
         .foreach(dao.create)
 
     Response.ok( ).build()

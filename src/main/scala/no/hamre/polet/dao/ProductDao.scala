@@ -3,21 +3,21 @@ package no.hamre.polet.dao
 import java.time.ZoneId
 import javax.sql.DataSource
 
-import no.hamre.polet.modell.Product
+import no.hamre.polet.modell.ProductLine
 import org.sql2o.quirks.PostgresQuirks
 import org.sql2o.{Connection, Sql2o}
 import scala.collection.JavaConverters._
 
 trait ProductDao {
-  def findAll: List[Product]
+  def findAll: List[ProductLine]
 
-  def create(product: Product): Long
+  def create(product: ProductLine): Long
 }
 
 class ProductDaoImpl(dataSource: DataSource) extends ProductDao {
   val sql2o = new Sql2o(dataSource, new PostgresQuirks)
 
-  override def findAll: List[Product] = {
+  override def findAll: List[ProductLine] = {
     val sql =
       """
         | SELECT * from product
@@ -28,7 +28,7 @@ class ProductDaoImpl(dataSource: DataSource) extends ProductDao {
       con = sql2o.beginTransaction()
       val products = con.createQuery(sql)
         .executeAndFetchTable().rows().asScala.map(r =>
-        Product(
+        ProductLine(
           r.getLong("id"),
           r.getDate("datotid").toInstant.atZone(defaultZoneId).toLocalDateTime(),
           r.getString("varenummer"),
@@ -89,7 +89,7 @@ class ProductDaoImpl(dataSource: DataSource) extends ProductDao {
   */
 
 
-override def create (product: Product): Long = {
+override def create (product: ProductLine): Long = {
   val sql =
   """
     | INSERT INTO product ( datotid, varenummer, varenavn, volum, pris, literpris, varetype, produktutvalg,
