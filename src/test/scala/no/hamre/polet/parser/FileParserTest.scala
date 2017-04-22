@@ -1,10 +1,7 @@
 package no.hamre.polet.parser
 
-import java.nio.{ByteBuffer, CharBuffer}
-import java.nio.charset.{Charset, CharsetEncoder}
-
 import io.dropwizard.testing.FixtureHelpers
-import no.hamre.polet.dao.{H2LiquibaseDataSourceFactory, ProductDao, ProductDaoImpl}
+import no.hamre.polet.dao.{H2LiquibaseDataSourceFactory, PoletDao}
 import no.hamre.polet.modell.ProductLine
 import org.scalatest.FunSuite
 
@@ -29,8 +26,8 @@ class FileParserTest extends FunSuite {
       Source.fromFile(s"src/main/resources/$filename", "windows-1252").getLines.toList
     val p = ProductLine(readmeText.tail.head.split(";"))
     val ds = H2LiquibaseDataSourceFactory.createDataSource("polet")
-    val dao = new ProductDaoImpl(ds)
-    val id = dao.create(p)
+    val dao = new PoletDao(ds)
+    val id = dao.update(p)
     println(id)
 /*
     readmeText.foreach {

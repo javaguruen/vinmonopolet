@@ -57,7 +57,9 @@ case class Product
   @BeanProperty emballasjetype: String,
   @BeanProperty korktype: String,
   @BeanProperty vareurl: String,
-  @BeanProperty updated: LocalDateTime
+  @BeanProperty active: Int = 1,
+  @BeanProperty updated: LocalDateTime = LocalDateTime.now(),
+  @BeanProperty prices: List[Price] = List()
 )
 
 //2014-10-22T00:56:50;1101;L�iten Linie;0,70;399,90;571,30;

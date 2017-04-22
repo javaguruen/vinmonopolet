@@ -4,20 +4,15 @@
 
 CREATE SEQUENCE product_id_seq start with 100 increment by 1;
 
---rollback DROP SEQUENCE users_id_seq;
+--rollback DROP SEQUENCE product_id_seq;
 
 -- TABLE product
-CREATE TABLE product (
+CREATE TABLE t_product (
   id                INT          NOT NULL DEFAULT NEXTVAL('product_id_seq'),
   datotid           TIMESTAMP,
   varenummer        VARCHAR(32),
   varenavn          VARCHAR(100),
-  volum             DECIMAL(10,2),
-  pris              DECIMAL(10,2),
-  literpris         DECIMAL(10,2),
   varetype          VARCHAR(100),
-  produktutvalg     VARCHAR(100),
-  butikkategori     VARCHAR(100),
   fylde             INT,
   friskhet          INT,
   garvestoffer      INT,
@@ -45,23 +40,34 @@ CREATE TABLE product (
   emballasjetype    VARCHAR(100),
   korktype          VARCHAR(100),
   vareurl           VARCHAR(512),
-
-  updated           TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  updated           TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_product_varenummer unique (varenummer)
 );
 
 --rollback DROP TABLE product;
 
+CREATE SEQUENCE price_id_seq start with 100 increment by 1;
+
+--rollback DROP SEQUENCE price_id_seq;
+
+
 -- TABLE price
-CREATE TABLE price (
-  id                INT          NOT NULL DEFAULT NEXTVAL('product_id_seq'),
+CREATE TABLE t_price (
+  id                INT NOT NULL DEFAULT NEXTVAL('price_id_seq'),
+  product_id        INT NOT NULL,
   datotid           TIMESTAMP,
   varenummer        VARCHAR(32),
   volum             DECIMAL(10,2),
   pris              DECIMAL(10,2),
   literpris         DECIMAL(10,2),
+  varetype          VARCHAR(100),
   produktutvalg     VARCHAR(100),
   butikkategori     VARCHAR(100),
-  updated           TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  updated           TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_product
+      FOREIGN KEY (product_id)
+      REFERENCES t_product (id),
+  CONSTRAINT uq_price_varenummer unique (varenummer)
 );
 
 --rollback DROP TABLE price;
