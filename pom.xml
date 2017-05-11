@@ -16,6 +16,7 @@
         <h2.version>1.4.194</h2.version>
         <liquibase.version>3.5.1</liquibase.version>
         <slf4j.version>1.7.21</slf4j.version>
+        <mockito.version>2.7.22</mockito.version>
     </properties>
 
     <dependencies>
@@ -62,6 +63,13 @@
             <artifactId>scalatest_${scala-major.version}</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -99,6 +107,11 @@
                 <groupId>org.scalatest</groupId>
                 <artifactId>scalatest_${scala-major.version}</artifactId>
                 <version>${scalatest.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

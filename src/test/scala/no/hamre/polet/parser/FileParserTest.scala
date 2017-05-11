@@ -9,13 +9,14 @@ import scala.io.Source
 
 class FileParserTest extends FunSuite {
 
-  test("Hello world") {
+
+  ignore("Hello world") {
     val content = FixtureHelpers.fixture("produkter20141022-005843-775.csv")
     val lines = content.split("\n")
     println(s"${lines.size} lines in file")
     lines.tail.foreach{line => {
       val p = ProductLine(line.split(";"))
-      println( p )
+      //println( p )
     }}
     assert(1 == 1)
   }
