@@ -1,12 +1,13 @@
 package no.hamre.polet.dao
 
+import java.sql.ResultSet
 import java.time.ZoneId
 import javax.sql.DataSource
 
-import no.hamre.polet.modell.ProductLine
+import no.hamre.polet.modell.{Price, ProductLine}
 import org.sql2o.data.Row
 import org.sql2o.quirks.PostgresQuirks
-import org.sql2o.{Connection, Sql2o}
+import org.sql2o.{Connection, ResultSetHandler, Sql2o}
 
 import scala.collection.JavaConverters._
 
@@ -19,21 +20,21 @@ trait Dao {
 
   def update(product: ProductLine): Long
 
-  def updateProductTimestamp(id: Long): Long
+  def updateProductTimestamp(id: Long): Unit
 
   def insertProduct(product: ProductLine): Long
 
+  def getLatestPrice(productId: Long): Price
+
   def insertPrice(product: ProductLine, product_id: Long): Long
 
-  def updatePrice(product: ProductLine, con: Connection): Boolean
+  def updatePrice(product: ProductLine): Unit
 }
 
-class PoletDao(dataSource: DataSource) extends Dao {
+class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler{
   val sql2o = new Sql2o(dataSource, new PostgresQuirks)
-  val defaultZoneId = ZoneId.systemDefault()
 
-
-  override def updateProductTimestamp(id: Long): Long = ???
+  override def updateProductTimestamp(id: Long): Unit = ???
 
   override def findAll: List[ProductLine] = {
     val sql =
@@ -133,6 +134,20 @@ class PoletDao(dataSource: DataSource) extends Dao {
       r.getString("emballasjetype"),
       r.getString("korktype"),
       r.getString("vareurl"),
+      r.getDate("updated").toInstant.atZone(defaultZoneId).toLocalDateTime)
+  }
+
+  private def mapToPrice(r: Row): Price = {
+    Price(
+      r.getLong("id"),
+      r.getDate("datotid").toInstant.atZone(defaultZoneId).toLocalDateTime,
+      r.getString("varenummer"),
+      r.getDouble("volum"),
+      r.getDouble("pris"),
+      r.getDouble("literpris"),
+      r.getString("varetype"),
+      r.getString("produktutvalg"),
+      r.getString("butikkategori"),
       r.getDate("updated").toInstant.atZone(defaultZoneId).toLocalDateTime)
   }
 
@@ -263,6 +278,27 @@ class PoletDao(dataSource: DataSource) extends Dao {
     }
   }
 
+
+  override def getLatestPrice(productId: Long): Price = {
+    var con: Connection = null
+    try {
+      con = sql2o.beginTransaction()
+      val sql =
+      s"""
+         | SELECT * FROM t_price WHERE product_id=:productid ORDER BY datotid DESC
+      """.stripMargin
+      val price: Price = con.createQuery(sql)
+        .addParameter("productid", productId)
+        .executeAndFetchFirst(this)
+      con.commit(true)
+      price
+    } catch {
+      case e: Exception =>
+        con.rollback(true)
+        throw new RuntimeException(e.getMessage, e)
+    }
+  }
+
   def insertProduct(product: ProductLine): Long = {
     val sql =
       """
@@ -288,7 +324,7 @@ class PoletDao(dataSource: DataSource) extends Dao {
     }
   }
 
-   def updatePrice(product: ProductLine, con: Connection): Boolean = {
+   override def updatePrice(product: ProductLine): Unit = {
     val sql =
       """
         | INSERT INTO t_product ( datotid, varenummer, varenavn, volum, pris, literpris, varetype, produktutvalg,
@@ -311,5 +347,24 @@ class PoletDao(dataSource: DataSource) extends Dao {
         con.rollback(true)
         throw new RuntimeException(e.getMessage, e)
     }
+  }
+}
+
+trait PriceResultSetHandler extends ResultSetHandler[Price] {
+  val defaultZoneId = ZoneId.systemDefault()
+
+  override def handle(resultSet: ResultSet): Price = {
+    Price(
+      resultSet.getLong("id"),
+      resultSet.getDate("datotid").toInstant.atZone(defaultZoneId).toLocalDateTime,
+      resultSet.getString("varenummer"),
+      resultSet.getDouble("volum"),
+      resultSet.getDouble("pris"),
+      resultSet.getDouble("literpris"),
+      resultSet.getString("varetype"),
+      resultSet.getString("produktutvalg"),
+      resultSet.getString("butikkategori"),
+      resultSet.getDate("updated").toInstant.atZone(defaultZoneId).toLocalDateTime
+    )
   }
 }
