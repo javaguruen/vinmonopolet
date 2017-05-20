@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit.WEEKS
 
 import no.hamre.polet.dao.Dao
 import no.hamre.polet.modell.{Price, Product, ProductLine}
+import no.hamre.polet.parser.FileDownloaderImpl
 import org.mockito.Mockito._
 import org.scalatest.FunSuite
 
@@ -18,7 +19,7 @@ trait ServiceTestData{
     productLine.volum, productLine.pris, productLine.literpris,
     productLine.produktutvalg, productLine.butikkategori, LocalDateTime.now())
   val priceChanged = price.copy(pris = 345.0, updated = price.updated.plus(1, WEEKS))
-  val service = new ProductDataServiceImpl(dao)
+  val service = new ProductDataServiceImpl(dao, new FileDownloaderImpl("vg.no"))
   val product = Product(idProd, productLine.datotid, productLine.varenummer, productLine.varenavn,
     productLine.varetype, productLine.volum,
     productLine.fylde,

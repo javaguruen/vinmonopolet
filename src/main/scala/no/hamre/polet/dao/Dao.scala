@@ -22,6 +22,8 @@ trait Dao {
 
   def getLatestPrice(productId: Long): Price
 
+  def findPrices(productId: Long): List[Price]
+
   def insertPrice(product: ProductLine, product_id: Long): Long
 
 }
@@ -222,6 +224,26 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
         .executeAndFetchFirst(this)
       con.commit(true)
       price
+    } catch {
+      case e: Exception =>
+        con.rollback(true)
+        throw new RuntimeException(e.getMessage, e)
+    }
+  }
+
+  override def findPrices(productId: Long): List[Price] = {
+    var con: Connection = null
+    try {
+      con = sql2o.beginTransaction()
+      val sql =
+        s"""
+           | SELECT * FROM t_price WHERE product_id=:productid ORDER BY datotid DESC, updated DESC
+      """.stripMargin
+      val prices: List[Price] = con.createQuery(sql)
+        .addParameter("productid", productId)
+        .executeAndFetch(this).asScala.toList
+      con.commit(true)
+      prices
     } catch {
       case e: Exception =>
         con.rollback(true)

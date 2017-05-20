@@ -1,44 +1,44 @@
 package no.hamre.polet.resources
 
-import javax.ws.rs.core.Response
-import javax.ws.rs.{GET, Path, Produces}
+import javax.ws.rs._
+import javax.ws.rs.core.{MediaType, Response}
 
 import com.codahale.metrics.annotation.Timed
-import no.hamre.polet.modell.ProductLine
-import no.hamre.polet.parser.CharsetConverter
 import no.hamre.polet.service.ProductDataService
-
-import scala.io.Source
+import no.hamre.polet.util.Slf4jLogger
+import org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404
 
 @Path("/products")
-@Produces(Array("application/json; charset=UTF-8"))
-//@Produces(Array(MediaType.APPLICATION_JSON))
-class ProductResource(service: ProductDataService) {
+@Produces(Array(MediaType.APPLICATION_JSON))
+class ProductResource(service: ProductDataService, defaultUrl: String) extends Slf4jLogger {
 
-/*
-  @GET
+  @PUT
+  @Path("/download")
   @Timed
-  def list: Response = {
-    val products = service.fin.findAll
-    Response.ok( products.take(100) ).build()
+  def download(@QueryParam("url") url: String): Response = {
+    log.info(s"PUT /products/download?url=$url")
+    val downloadUrl = url match {
+      case null | "" => defaultUrl
+      case s: String => s
+    }
+    val result = service.updateFromWeb(downloadUrl)
+    Response.ok(result).build()
   }
-*/
 
   @GET
-  @Path("/file")
   @Timed
-  def loadFile: Response = {
-    val filename = "produkter_short.csv"
-    //val filename = "produkter.csv"
-    val path = "src/main/resources"
-    val products: List[String] = Source.fromFile(s"$path/$filename", "Windows-1252")
-      .getLines().toList
-    products.tail
-      .map(l => CharsetConverter(l))
-      .map(l=>ProductLine(l.split(";")))
-        .foreach(service.update)
-
-    Response.ok( ).build()
+  @Path("{productid}")
+  def findProduct(@PathParam("productid") productId: String): Response = {
+    log.info(s"GET /products/$productId")
+    try {
+      service.findProduct(productId)
+        .map(p => Response.ok(p).build())
+        .getOrElse(Response.status(NOT_FOUND_404).build())
+    } catch{
+      case e: Exception =>
+        log.error(s"Exception getting product=$productId")
+        Response.serverError().build()
+    }
   }
 
 

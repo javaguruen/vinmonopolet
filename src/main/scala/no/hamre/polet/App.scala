@@ -5,6 +5,7 @@ import io.dropwizard.db.DataSourceFactory
 import io.dropwizard.migrations.MigrationsBundle
 import io.dropwizard.setup.{Bootstrap, Environment}
 import no.hamre.polet.dao.{H2LiquibaseDataSourceFactory, PoletDao}
+import no.hamre.polet.parser.FileDownloaderImpl
 import no.hamre.polet.resources.ProductResource
 import no.hamre.polet.service.ProductDataServiceImpl
 
@@ -25,8 +26,8 @@ class App() extends Application[Config] {
       case false => config.database.build(environment.metrics(), "polet")
     }
     val productDao = new PoletDao(dataSource)
-    val productService = new ProductDataServiceImpl(productDao)
-    val productResource = new ProductResource(productService)
+    val productService = new ProductDataServiceImpl(productDao, new FileDownloaderImpl(config.dataEncoding))
+    val productResource = new ProductResource(productService, config.dataUrl)
 
     environment.jersey().register(productResource)
   }
