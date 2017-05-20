@@ -12,7 +12,6 @@ case class Price
   @BeanProperty volum: Double,
   @BeanProperty pris: Double,
   @BeanProperty literpris: Double,
-  @BeanProperty varetype: String,
   @BeanProperty produktutvalg: String,
   @BeanProperty butikkategori: String,
   @BeanProperty updated: LocalDateTime
@@ -24,12 +23,8 @@ case class Product
   @BeanProperty datotid: LocalDateTime,
   @BeanProperty varenummer: String,
   @BeanProperty varenavn: String,
-  @BeanProperty volum: Double,
-  @BeanProperty pris: Double,
-  @BeanProperty literpris: Double,
   @BeanProperty varetype: String,
-  @BeanProperty produktutvalg: String,
-  @BeanProperty butikkategori: String,
+  @BeanProperty volum: Double,
   @BeanProperty fylde: Int,
   @BeanProperty friskhet: Int,
   @BeanProperty garvestoffer: Int,
@@ -57,7 +52,7 @@ case class Product
   @BeanProperty emballasjetype: String,
   @BeanProperty korktype: String,
   @BeanProperty vareurl: String,
-  @BeanProperty active: Int = 1,
+  @BeanProperty active: Boolean = true,
   @BeanProperty updated: LocalDateTime = LocalDateTime.now(),
   @BeanProperty prices: List[Price] = List()
 )

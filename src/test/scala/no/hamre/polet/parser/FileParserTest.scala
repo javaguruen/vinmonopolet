@@ -28,7 +28,7 @@ class FileParserTest extends FunSuite {
     val p = ProductLine(readmeText.tail.head.split(";"))
     val ds = H2LiquibaseDataSourceFactory.createDataSource("polet")
     val dao = new PoletDao(ds)
-    val id = dao.update(p)
+    val id = dao.insertProduct(p)
     println(id)
 /*
     readmeText.foreach {

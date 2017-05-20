@@ -1,10 +1,10 @@
 package no.hamre.polet.service
 
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit.WEEKS
 
 import no.hamre.polet.dao.Dao
-import no.hamre.polet.modell.{Price, ProductLine}
-import org.mockito.Mockito
+import no.hamre.polet.modell.{Price, Product, ProductLine}
 import org.mockito.Mockito._
 import org.scalatest.FunSuite
 
@@ -14,8 +14,23 @@ trait ServiceTestData{
   val idProd: Long = 1
   val idPrice: Long = 100
   val productLine = ProductLine(line.split(";"))
-  val price = Price(idPrice, productLine.datotid, productLine.varenummer, productLine.volum, productLine.pris, productLine.literpris, productLine.varetype, productLine.produktutvalg, productLine.butikkategori, LocalDateTime.now())
+  val price = Price(idPrice, productLine.datotid, productLine.varenummer,
+    productLine.volum, productLine.pris, productLine.literpris,
+    productLine.produktutvalg, productLine.butikkategori, LocalDateTime.now())
+  val priceChanged = price.copy(pris = 345.0, updated = price.updated.plus(1, WEEKS))
   val service = new ProductDataServiceImpl(dao)
+  val product = Product(idProd, productLine.datotid, productLine.varenummer, productLine.varenavn,
+    productLine.varetype, productLine.volum,
+    productLine.fylde,
+    productLine.friskhet, productLine.garvestoffer, productLine.bitterhet,
+    productLine.sodme, productLine.farge, productLine.lukt, productLine.smak,
+    productLine.passertil01, productLine.passertil02, productLine.passertil03,
+    productLine.land, productLine.distrikt, productLine.underdistrikt, productLine.aargang,
+    productLine.raastoff, productLine.metode, productLine.alkohol, productLine.sukker,
+    productLine.syre, productLine.lagringsgrad, productLine.produsent, productLine.grossist,
+    productLine.distributor, productLine.emballasjetype, productLine.korktype,
+    productLine.vareurl, active = true, productLine.updated, List()
+  )
 }
 
 class ProductDataServiceImplTest extends FunSuite {
@@ -37,8 +52,8 @@ class ProductDataServiceImplTest extends FunSuite {
   test("Existing product with no price change should only update timestamp"){
     new ServiceTestData {
       val productId = "4596101"
-      val productLingWithId = productLine.copy(id=1L)
-      when(dao.findByVarenummer(productId)).thenReturn(Some(productLingWithId))
+      val productLineWithId = productLine.copy(id=1L)
+      when(dao.findByVarenummer(productId)).thenReturn(Some(product))
       doNothing().when(dao).updateProductTimestamp(idProd)
       when(dao.getLatestPrice(idProd)).thenReturn(price)
 
@@ -48,7 +63,25 @@ class ProductDataServiceImplTest extends FunSuite {
       verify(dao, times(0)).insertProduct(productLine)
       verify(dao, times(1)).updateProductTimestamp(idProd)
       verify(dao, times(1)).getLatestPrice(idProd)
-      verify(dao, times(0)).updatePrice(productLingWithId)
+      verify(dao, times(0)).insertPrice(productLineWithId, productLine.id)
+    }
+  }
+
+  test("Existing product with changed price should update timestamp and add ne wprice"){
+    new ServiceTestData {
+      val productLineWithId = productLine.copy(id=idProd)
+      val productLineWithNewPrice = productLine.copy(pris=1200.0)
+      when(dao.findByVarenummer(productLine.varenummer)).thenReturn(Some(product))
+      doNothing().when(dao).updateProductTimestamp(idProd)
+      when(dao.getLatestPrice(idProd)).thenReturn(price)
+
+      service.update(productLineWithNewPrice)
+
+      verify(dao, times(1)).findByVarenummer(productLine.varenummer)
+      verify(dao, times(0)).insertProduct(productLine)
+      verify(dao, times(1)).updateProductTimestamp(idProd)
+      verify(dao, times(1)).getLatestPrice(idProd)
+      verify(dao, times(1)).insertPrice(productLineWithNewPrice, productLineWithId.id)
     }
 
   }

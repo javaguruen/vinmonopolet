@@ -13,6 +13,7 @@ CREATE TABLE t_product (
   varenummer        VARCHAR(32),
   varenavn          VARCHAR(100),
   varetype          VARCHAR(100),
+  volum             DECIMAL(10,2),
   fylde             INT,
   friskhet          INT,
   garvestoffer      INT,
@@ -40,6 +41,7 @@ CREATE TABLE t_product (
   emballasjetype    VARCHAR(100),
   korktype          VARCHAR(100),
   vareurl           VARCHAR(512),
+  active            INT,
   updated           TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uq_product_varenummer unique (varenummer)
 );
@@ -60,14 +62,12 @@ CREATE TABLE t_price (
   volum             DECIMAL(10,2),
   pris              DECIMAL(10,2),
   literpris         DECIMAL(10,2),
-  varetype          VARCHAR(100),
   produktutvalg     VARCHAR(100),
   butikkategori     VARCHAR(100),
   updated           TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_product
       FOREIGN KEY (product_id)
-      REFERENCES t_product (id),
-  CONSTRAINT uq_price_varenummer unique (varenummer)
+      REFERENCES t_product (id)
 );
 
 --rollback DROP TABLE price;

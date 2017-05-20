@@ -19,7 +19,7 @@ class ProductDataServiceImpl(dao: Dao) extends ProductDataService with Slf4jLogg
           log.info(s"Price unchanged for product ${p.id}")
         } else {
           log.info(s"Price changed from ${latestPrice.pris} to ${product.pris} for product ${p.id}")
-          dao.updatePrice(product)
+          dao.insertPrice(product, p.id)
         }
       case None    =>
         val productId = dao.insertProduct(product)
