@@ -4,6 +4,7 @@ import io.dropwizard.Application
 import io.dropwizard.db.DataSourceFactory
 import io.dropwizard.migrations.MigrationsBundle
 import io.dropwizard.setup.{Bootstrap, Environment}
+import io.federecio.dropwizard.swagger.{SwaggerBundle, SwaggerBundleConfiguration}
 import no.hamre.polet.dao.{H2LiquibaseDataSourceFactory, PoletDao}
 import no.hamre.polet.parser.FileDownloaderImpl
 import no.hamre.polet.resources.ProductResource
@@ -37,6 +38,11 @@ class App() extends Application[Config] {
       override
       def getDataSourceFactory(configuration: Config): DataSourceFactory = {
         configuration.database
+      }
+    })
+    bootstrap.addBundle(new SwaggerBundle[Config] {
+      override def getSwaggerBundleConfiguration(t: Config): SwaggerBundleConfiguration = {
+        t.swaggerBundleConfiguration
       }
     })
   }
