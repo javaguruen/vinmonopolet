@@ -12,7 +12,7 @@ import org.sql2o.{Connection, ResultSetHandler, Sql2o}
 import scala.collection.JavaConverters._
 
 trait Dao {
-  def findAll: List[ProductLine]
+  def findAll: List[Product]
 
   def findByVarenummer(varenummer: String): Option[Product]
 
@@ -54,7 +54,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
     }
   }
 
-  override def findAll: List[ProductLine] = {
+  override def findAll: List[Product] = {
     val sql =
       """
         | SELECT * from t_product
@@ -63,8 +63,9 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
     try {
       con = sql2o.beginTransaction()
       val products = con.createQuery(sql)
-        .executeAndFetchTable().rows().asScala.map(r =>
-        ProductLine(
+        .executeAndFetchTable().rows().asScala.map(r => mapToProduct(r))
+/*
+        Product(
           r.getLong("id"),
           r.getDate("datotid").toInstant.atZone(defaultZoneId).toLocalDateTime,
           r.getString("varenummer"),
@@ -105,6 +106,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
           r.getDate("updated").toInstant.atZone(defaultZoneId).toLocalDateTime
         )
       )
+*/
       products.toList
     } catch {
       case e: Exception =>
@@ -154,6 +156,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
     )
   }
 
+/*
   private def mapToPrice(r: Row): Price = {
     Price(
       r.getLong("id"),
@@ -167,6 +170,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
       r.getDate("updated").toInstant.atZone(defaultZoneId).toLocalDateTime)
   }
 
+*/
   override def findByVarenummer(varenummer: String): Option[Product] = {
     val sql = "SELECT * FROM t_product WHERE varenummer=:varenummer"
     var con: Connection = null
@@ -180,7 +184,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
       products match {
         case Nil => None
         case x :: Nil => Some(x)
-        case x :: xs => throw new RuntimeException(s"Too many products with varenummer $varenummer")
+        case _ => throw new RuntimeException(s"Too many products with varenummer $varenummer")
       }
     } catch {
       case e: Exception => throw new RuntimeException(e.getMessage, e)
@@ -275,33 +279,6 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
         throw new RuntimeException(e.getMessage, e)
     }
   }
-
-  /*
-     override def updatePrice(product: ProductLine): Unit = {
-      val sql =
-        """
-          | INSERT INTO t_product ( datotid, varenummer, varenavn, volum, pris, literpris, varetype, produktutvalg,
-          |   butikkategori, fylde, friskhet, garvestoffer, bitterhet, sodme, farge, lukt, smak, passertil01,
-          |   passertil02, passertil03, land, distrikt, underdistrikt, aargang, raastoff, metode, alkohol, sukker,
-          |   syre, lagringsgrad, produsent, grossist, distributor, emballasjetype, korktype, vareurl)
-          | VALUES (:datotid, :varenummer, :varenavn, :volum, :pris, :literpris, :varetype, :produktutvalg,
-          |   :butikkategori, :fylde, :friskhet, :garvestoffer, :bitterhet, :sodme, :farge, :lukt, :smak, :passertil01,
-          |   :passertil02, :passertil03, :land, :distrikt, :underdistrikt, :aargang, :raastoff, :metode, :alkohol, :sukker,
-          |   :syre, :lagringsgrad, :produsent, :grossist, :distributor, :emballasjetype, :korktype, :vareurl)
-        """.stripMargin
-      var con: Connection = null
-      try {
-        con = sql2o.beginTransaction()
-        val id: Long = con.createQuery(sql, true).bind(product).executeUpdate().getKey.asInstanceOf[Long]
-        con.commit(true)
-        id != null
-      } catch {
-        case e: Exception =>
-          con.rollback(true)
-          throw new RuntimeException(e.getMessage, e)
-      }
-    }
-  */
 }
 
 trait PriceResultSetHandler extends ResultSetHandler[Price] {

@@ -86,4 +86,5 @@ class ProductDataServiceImplTest extends FunSuite {
     }
 
   }
+
 }

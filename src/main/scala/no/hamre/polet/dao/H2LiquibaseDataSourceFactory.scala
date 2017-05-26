@@ -31,10 +31,6 @@ object H2LiquibaseDataSourceFactory{
 
 class H2LiquibaseDataSourceFactory {
 
-  //  private static final String DEFAULT_LQ_PATH = "liquibase/db.changelog.sql"
-
-
-
   def createDataSource(schemaName: String , h2DbName: String , liquibasePath:String , resourceAccessor: ResourceAccessor ): DataSource = {
     val ds: JdbcDataSource  = new LiqDataSource(schemaName)
     var options = "MODE=PostgreSQL;INIT=CREATE SCHEMA IF NOT EXISTS " + schemaName

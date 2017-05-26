@@ -6,7 +6,6 @@ import no.hamre.polet.parser.FileDownloader
 import no.hamre.polet.util.Slf4jLogger
 
 trait ProductDataService {
-  //def update(product: ProductLine)
   def updateFromWeb(url: String): DownloadResult
 
   def findProduct(productId: String): Option[Product]

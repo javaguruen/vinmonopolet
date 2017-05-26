@@ -82,6 +82,15 @@ class DaoTest extends FunSuite {
     }
   }
 
+  test("findAll should return all rows") {
+    new ProductLineTestData {
+      dao.insertProduct(product)
+      dao.insertProduct(product.copy(varenummer = "321"))
+      val products = dao.findAll
+      assert( products.size == 2)
+    }
+  }
+
       /*
         test("Non-existing product gives None") {
           new ProductLineTestData {
