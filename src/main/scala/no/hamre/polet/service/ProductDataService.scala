@@ -28,6 +28,7 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
       try {
         update(p)
         success += 1
+        if( processed > 5) throw new RuntimeException("Stopping")
       }catch{
         case e: Exception =>
           log.error(s"Error ${e.getMessage} when parsing line: \n$line", e)
