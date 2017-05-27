@@ -28,10 +28,10 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
       try {
         update(p)
         success += 1
-        if( processed > 5) throw new StopException("Stopping")
+        if( processed > 5) throw StopException("Stopping")
       }catch{
         case e: StopException =>
-          return     DownloadResult(processed, success, failure, errors)
+          return   throw new RuntimeException("stopped")//  DownloadResult(processed, success, failure, errors)
 
         case e: Exception =>
           log.error(s"Error ${e.getMessage} when parsing line: \n$line")

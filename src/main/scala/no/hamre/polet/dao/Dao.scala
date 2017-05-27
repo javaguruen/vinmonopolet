@@ -205,7 +205,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
       """.stripMargin
       val id: Long = con.createQuery(sql, true)
         .bind(product).addParameter("productId", productId)
-        .executeUpdate().getKey.asInstanceOf[Long]
+        .executeUpdate().getKey(classOf[Long])
       con.commit(true)
       id
     } catch {
