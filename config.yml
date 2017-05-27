@@ -24,10 +24,10 @@ database:
   .production.driverClass: org.postgresql.Driver
 
   # the username
-  user: sa
+#  user: sa
 
   # the password
-  password:
+#  password:
 
   # the JDBC URL
   #url: jdbc:postgresql://db.example.com/db-prod
