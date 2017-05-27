@@ -8,7 +8,7 @@ CREATE SEQUENCE product_id_seq start with 100 increment by 1;
 
 -- TABLE product
 CREATE TABLE t_product (
-  id                INT          NOT NULL DEFAULT NEXTVAL('product_id_seq'),
+  id                INT NOT NULL DEFAULT NEXTVAL('product_id_seq') PRIMARY KEY,
   datotid           TIMESTAMP,
   varenummer        VARCHAR(32),
   varenavn          VARCHAR(100),
@@ -55,7 +55,7 @@ CREATE SEQUENCE price_id_seq start with 100 increment by 1;
 
 -- TABLE price
 CREATE TABLE t_price (
-  id                INT NOT NULL DEFAULT NEXTVAL('price_id_seq'),
+  id                INT NOT NULL DEFAULT NEXTVAL('price_id_seq') PRIMARY KEY,
   product_id        INT NOT NULL,
   datotid           TIMESTAMP,
   varenummer        VARCHAR(32),
