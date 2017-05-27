@@ -5,6 +5,7 @@ import java.time.ZoneId
 import javax.sql.DataSource
 
 import no.hamre.polet.modell.{Price, Product, ProductLine}
+import no.hamre.polet.util.Slf4jLogger
 import org.sql2o.data.Row
 import org.sql2o.quirks.PostgresQuirks
 import org.sql2o.{Connection, ResultSetHandler, Sql2o}
@@ -28,7 +29,7 @@ trait Dao {
 
 }
 
-class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
+class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler with Slf4jLogger{
   val sql2o = new Sql2o(dataSource, new PostgresQuirks)
 
   override def updateProductTimestamp(id: Long): Unit = {
@@ -210,6 +211,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
     } catch {
       case e: Exception =>
         con.rollback(true)
+        log.error(e.getMessage, e)
         throw new RuntimeException(e.getMessage, e)
     }
   }
@@ -276,6 +278,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
     } catch {
       case e: Exception =>
         con.rollback(true)
+        log.error(e.getMessage, e)
         throw new RuntimeException(e.getMessage, e)
     }
   }

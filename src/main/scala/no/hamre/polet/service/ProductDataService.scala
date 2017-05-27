@@ -30,7 +30,7 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
         success += 1
       }catch{
         case e: Exception =>
-          log.error(s"Error ${e.getMessage} when parsing line: \n$line")
+          log.error(s"Error ${e.getMessage} when parsing line: \n$line", e)
           errors = s"${e.getMessage} : [$line]" :: errors
           failure += 1
       }
