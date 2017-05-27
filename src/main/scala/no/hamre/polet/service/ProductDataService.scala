@@ -28,10 +28,13 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
       try {
         update(p)
         success += 1
-        if( processed > 5) throw new RuntimeException("Stopping")
+        if( processed > 5) throw new StopException("Stopping")
       }catch{
+        case e: StopException =>
+          return     DownloadResult(processed, success, failure, errors)
+
         case e: Exception =>
-          log.error(s"Error ${e.getMessage} when parsing line: \n$line", e)
+          log.error(s"Error ${e.getMessage} when parsing line: \n$line")
           errors = s"${e.getMessage} : [$line]" :: errors
           failure += 1
       }
@@ -41,11 +44,15 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
     DownloadResult(processed, success, failure, errors)
   }
 
+  case class StopException(msg: String ) extends RuntimeException(msg)
+
   def update(product: ProductLine): Unit = {
     dao.findByVarenummer(product.varenummer) match {
       case Some(p) =>
+        log.info(s"Found varenummer ${p.varenummer} with id ${p.id}")
         dao.updateProductTimestamp(p.id)
         val latestPrice = dao.getLatestPrice(p.id)
+        log.info(s"Latest price=$latestPrice")
         if (latestPrice.pris == product.pris) {
           log.info(s"Price unchanged for product ${p.id}")
         } else {
@@ -54,6 +61,7 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
         }
       case None =>
         val productId = dao.insertProduct(product)
+        log.info(s"New product inserted. Varenummer ${product.varenummer} got id: $productId")
         dao.insertPrice(product, productId)
     }
   }

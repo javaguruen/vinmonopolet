@@ -211,7 +211,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
     } catch {
       case e: Exception =>
         con.rollback(true)
-        log.error(e.getMessage, e)
+        //log.error(e.getMessage, e)
         throw new RuntimeException(e.getMessage, e)
     }
   }
@@ -279,7 +279,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
     } catch {
       case e: Exception =>
         con.rollback(true)
-        log.error(e.getMessage, e)
+        //log.error(e.getMessage, e)
         throw new RuntimeException(e.getMessage, e)
     }
   }
