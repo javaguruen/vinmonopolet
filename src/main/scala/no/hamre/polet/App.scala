@@ -9,6 +9,7 @@ import no.hamre.polet.dao.{H2LiquibaseDataSourceFactory, PoletDao}
 import no.hamre.polet.parser.FileDownloaderImpl
 import no.hamre.polet.resources.ProductResource
 import no.hamre.polet.service.ProductDataServiceImpl
+import org.constretto.dropwizard.ConstrettoBundle
 
 object App {
   def main(args: Array[String]): Unit = {
@@ -34,6 +35,7 @@ class App() extends Application[Config] {
   }
 
   override def initialize(bootstrap: Bootstrap[Config]): Unit = {
+    bootstrap.addBundle(new ConstrettoBundle())
     bootstrap.addBundle(new MigrationsBundle[Config]() {
       override
       def getDataSourceFactory(configuration: Config): DataSourceFactory = {

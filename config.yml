@@ -10,6 +10,7 @@ logging:
   level: INFO
 
 useH2Database: true
+#.production.useH2Database: false
 
 dataUrl: https://www.vinmonopolet.no/medias/sys_master/products/products/hbc/hb0/8834253127710/produkter.csv
 dataEncoding: windows-1252
@@ -20,6 +21,7 @@ swagger:
 database:
   # the name of your JDBC driver
   driverClass: org.h2.Driver
+#  .production.driverClass: org.postgresql.Driver
 
   # the username
   user: sa
