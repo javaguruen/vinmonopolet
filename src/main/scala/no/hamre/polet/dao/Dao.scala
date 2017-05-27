@@ -199,7 +199,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
         s"""
            | INSERT INTO t_price (id, product_id, datotid, varenummer, volum, pris, literpris, produktutvalg,
            |   butikkategori, updated)
-           | VALUES ( price_id_seq.nextval, :productId, :datotid, :varenummer, :volum, :pris, :literpris, :produktutvalg,
+           | VALUES ( nextval('price_id_seq'), :productId, :datotid, :varenummer, :volum, :pris, :literpris, :produktutvalg,
            |   :butikkategori, CURRENT_TIMESTAMP)
       """.stripMargin
       val id: Long = con.createQuery(sql, true)
@@ -262,7 +262,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler {
         |   fylde, friskhet, garvestoffer, bitterhet, sodme, farge, lukt, smak, passertil01,
         |   passertil02, passertil03, land, distrikt, underdistrikt, aargang, raastoff, metode, alkohol, sukker,
         |   syre, lagringsgrad, produsent, grossist, distributor, emballasjetype, korktype, vareurl, active)
-        | VALUES (product_id_seq.nextval, :datotid, :varenummer, :varenavn, :varetype, :volum,
+        | VALUES (nextval('product_id_seq'), :datotid, :varenummer, :varenavn, :varetype, :volum,
         |   :fylde, :friskhet, :garvestoffer, :bitterhet, :sodme, :farge, :lukt, :smak, :passertil01,
         |   :passertil02, :passertil03, :land, :distrikt, :underdistrikt, :aargang, :raastoff, :metode, :alkohol, :sukker,
         |   :syre, :lagringsgrad, :produsent, :grossist, :distributor, :emballasjetype, :korktype, :vareurl, 1)
