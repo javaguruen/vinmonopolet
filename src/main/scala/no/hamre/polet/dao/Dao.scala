@@ -275,6 +275,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
       val id = con.createQuery(sql, true).bind(product).executeUpdate().getKey(classOf[Long]) //getKey //.asInstanceOf[Long]
       log.info(s"Generated key:  type=${id.getClass.getName} key=$id")
       con.commit(true)
+      id
     } catch {
       case e: Exception =>
         con.rollback(true)
