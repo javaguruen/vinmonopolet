@@ -28,7 +28,7 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
       try {
         update(p)
         success += 1
-        if( processed > 5) throw StopException("Stopping")
+        //if( processed > 5) throw StopException("Stopping")
       }catch{
         case e: StopException =>
           return   throw new RuntimeException("stopped")//  DownloadResult(processed, success, failure, errors)
@@ -53,10 +53,12 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
         dao.updateProductTimestamp(p.id)
         val latestPrice = dao.getLatestPrice(p.id)
         log.info(s"Latest price=$latestPrice")
-        if (latestPrice.pris == product.pris) {
+        if( latestPrice.isEmpty){
+          dao.insertPrice(product, p.id)
+        } else if (latestPrice.get.pris == product.pris) {
           log.info(s"Price unchanged for product ${p.id}")
         } else {
-          log.info(s"Price changed from ${latestPrice.pris} to ${product.pris} for product ${p.id}")
+          log.info(s"Price changed from ${latestPrice.get.pris} to ${product.pris} for product ${p.id}")
           dao.insertPrice(product, p.id)
         }
       case None =>

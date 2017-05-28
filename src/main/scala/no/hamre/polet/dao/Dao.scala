@@ -1,5 +1,6 @@
 package no.hamre.polet.dao
 
+import java.lang
 import java.sql.ResultSet
 import java.time.ZoneId
 import javax.sql.DataSource
@@ -21,7 +22,7 @@ trait Dao {
 
   def insertProduct(product: ProductLine): Long
 
-  def getLatestPrice(productId: Long): Price
+  def getLatestPrice(productId: Long): Option[Price]
 
   def findPrices(productId: Long): List[Price]
 
@@ -203,9 +204,9 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
            | VALUES ( nextval('price_id_seq'), :productId, :datotid, :varenummer, :volum, :pris, :literpris, :produktutvalg,
            |   :butikkategori, CURRENT_TIMESTAMP)
       """.stripMargin
-      val id: Long = con.createQuery(sql, true)
+      val id: lang.Long = con.createQuery(sql, true)
         .bind(product).addParameter("productId", productId)
-        .executeUpdate().getKey(classOf[Long])
+        .executeUpdate().getKey(classOf[lang.Long])
       con.commit(true)
       id
     } catch {
@@ -217,7 +218,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
   }
 
 
-  override def getLatestPrice(productId: Long): Price = {
+  override def getLatestPrice(productId: Long): Option[Price] = {
     var con: Connection = null
     try {
       con = sql2o.beginTransaction()
@@ -229,7 +230,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
         .addParameter("productid", productId)
         .executeAndFetchFirst(this)
       con.commit(true)
-      price
+      Option(price)
     } catch {
       case e: Exception =>
         con.rollback(true)
@@ -272,10 +273,10 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
     var con: Connection = null
     try {
       con = sql2o.beginTransaction()
-      val id = con.createQuery(sql, true).bind(product).executeUpdate().getKey(classOf[Long]) //getKey //.asInstanceOf[Long]
+      val id: lang.Long = con.createQuery(sql, true).bind(product).executeUpdate().getKey(classOf[lang.Long]) //getKey //.asInstanceOf[Long]
       log.info(s"Generated key:  type=${id.getClass.getName} key=$id")
       con.commit(true)
-      id
+      id.asInstanceOf[Long]
     } catch {
       case e: Exception =>
         con.rollback(true)

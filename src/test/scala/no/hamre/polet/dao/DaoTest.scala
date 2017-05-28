@@ -77,8 +77,8 @@ class DaoTest extends FunSuite {
       val newPrice = 1000.50
       val idSecond = dao.insertPrice(product.copy(datotid=LocalDateTime.now(), pris=newPrice), productId)
       val latetsPrice = dao.getLatestPrice(productId)
-      assert( latetsPrice.id == idSecond)
-      assert( latetsPrice.pris == newPrice)
+      assert( latetsPrice.get.id == idSecond)
+      assert( latetsPrice.get.pris == newPrice)
     }
   }
 

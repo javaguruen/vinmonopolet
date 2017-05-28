@@ -56,7 +56,7 @@ class ProductDataServiceImplTest extends FunSuite {
       val productLineWithId = productLine.copy(id=1L)
       when(dao.findByVarenummer(productId)).thenReturn(Some(product))
       doNothing().when(dao).updateProductTimestamp(idProd)
-      when(dao.getLatestPrice(idProd)).thenReturn(price)
+      when(dao.getLatestPrice(idProd)).thenReturn(Some(price))
 
       service.update(productLine)
 
@@ -68,13 +68,30 @@ class ProductDataServiceImplTest extends FunSuite {
     }
   }
 
+  test("Existing product without price record should insert price"){
+    new ServiceTestData {
+      val productId = "4596101"
+      when(dao.findByVarenummer(productId)).thenReturn(Some(product))
+      doNothing().when(dao).updateProductTimestamp(idProd)
+      when(dao.getLatestPrice(idProd)).thenReturn(Option.empty)
+
+      service.update(productLine)
+
+      verify(dao, times(1)).findByVarenummer(productId)
+      verify(dao, times(0)).insertProduct(productLine)
+      verify(dao, times(1)).updateProductTimestamp(idProd)
+      verify(dao, times(1)).getLatestPrice(idProd)
+      verify(dao, times(1)).insertPrice(productLine, idProd)
+    }
+  }
+
   test("Existing product with changed price should update timestamp and add ne wprice"){
     new ServiceTestData {
       val productLineWithId = productLine.copy(id=idProd)
       val productLineWithNewPrice = productLine.copy(pris=1200.0)
       when(dao.findByVarenummer(productLine.varenummer)).thenReturn(Some(product))
       doNothing().when(dao).updateProductTimestamp(idProd)
-      when(dao.getLatestPrice(idProd)).thenReturn(price)
+      when(dao.getLatestPrice(idProd)).thenReturn(Some(price))
 
       service.update(productLineWithNewPrice)
 

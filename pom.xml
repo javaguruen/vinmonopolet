@@ -21,7 +21,7 @@
         <constretto.version>2.2.3</constretto.version>
         <constretto-dropwizard.version>1.1</constretto-dropwizard.version>
         <snakeyaml.version>1.17</snakeyaml.version>
-        <postgres.version>9.4.1209</postgres.version>
+        <postgresql.version>9.4.1209</postgresql.version>
     </properties>
 
     <dependencies>
@@ -69,11 +69,6 @@
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-testing</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgres.version}</version>
         </dependency>
         <dependency>
             <groupId>org.sql2o</groupId>
@@ -142,6 +137,11 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.yaml</groupId>
