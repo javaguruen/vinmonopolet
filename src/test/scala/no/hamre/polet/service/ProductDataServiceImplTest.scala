@@ -5,9 +5,13 @@ import java.time.temporal.ChronoUnit.WEEKS
 
 import no.hamre.polet.dao.Dao
 import no.hamre.polet.modell.{Price, Product, ProductLine}
-import no.hamre.polet.parser.FileDownloaderImpl
+import no.hamre.polet.parser.{FileDownloaderImpl, MockFileDownloader}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito._
 import org.scalatest.FunSuite
+
+import scala.reflect.macros.whitebox
 
 trait ServiceTestData{
   val dao = mock(classOf[Dao])
@@ -19,7 +23,7 @@ trait ServiceTestData{
     productLine.volum, productLine.pris, productLine.literpris,
     productLine.produktutvalg, productLine.butikkategori, LocalDateTime.now())
   val priceChanged = price.copy(pris = 345.0, updated = price.updated.plus(1, WEEKS))
-  val service = new ProductDataServiceImpl(dao, new FileDownloaderImpl("vg.no"))
+  val service = new ProductDataServiceImpl(dao, new MockFileDownloader())
   val product = Product(idProd, productLine.datotid, productLine.varenummer, productLine.varenavn,
     productLine.varetype, productLine.volum,
     productLine.fylde,
@@ -101,7 +105,20 @@ class ProductDataServiceImplTest extends FunSuite {
       verify(dao, times(1)).getLatestPrice(idProd)
       verify(dao, times(1)).insertPrice(productLineWithNewPrice, productLineWithId.id)
     }
+  }
 
+  test("Other products than whisky are filtered out"){
+    new ServiceTestData {
+      when(dao.findByVarenummer(anyString())).thenReturn(Some(product))
+      doNothing().when(dao).updateProductTimestamp(idProd)
+      when(dao.getLatestPrice(idProd)).thenReturn(Some(price))
+
+      val result = service.updateFromWeb("produkter-2017-05-20-short.csv")
+      assert( result.errors.isEmpty)
+      assert( result.total == 10)
+      assert( result.whiskies == 1)
+      assert( result.success == 1)
+    }
   }
 
 }

@@ -16,35 +16,33 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
 
   override def updateFromWeb(url: String): DownloadResult = {
     val data = downloader.download(url)
-    var processed = 0
+    var whiskies = 0
+    var total = 0
     var success = 0
     var failure = 0
     var errors: List[String] = List()
     val lines = data.split("\n")
     log.info(s"${lines.size} lines in file")
-    lines.tail.foreach { line => {
-      val p = ProductLine(line.split(";"))
-      processed += 1
+    lines.tail
+      .map(l => ProductLine(l.split(";")))
+      .filter(p => p.varetype.toUpperCase() == "WHISKY")
+      .foreach { p => {
+      whiskies += 1
       try {
         update(p)
         success += 1
         //if( processed > 5) throw StopException("Stopping")
       }catch{
-        case e: StopException =>
-          return   throw new RuntimeException("stopped")//  DownloadResult(processed, success, failure, errors)
-
         case e: Exception =>
-          log.error(s"Error ${e.getMessage} when parsing line: \n$line")
-          errors = s"${e.getMessage} : [$line]" :: errors
+          log.error(s"Error ${e.getMessage} when parsing: \n$p")
+          errors = s"${e.getMessage} : [$p]" :: errors
           failure += 1
       }
     }
     }
-    log.info(s"Done downloading and parsing file. $processed lines read, $failure failed and $success succeeded")
-    DownloadResult(processed, success, failure, errors)
+    log.info(s"Done downloading and parsing file. ${lines.size} lines read, $whiskies whiskies $failure failed and $success succeeded")
+    DownloadResult(lines.size-1, whiskies, success, failure, errors)
   }
-
-  case class StopException(msg: String ) extends RuntimeException(msg)
 
   def update(product: ProductLine): Unit = {
     dao.findByVarenummer(product.varenummer) match {
@@ -65,6 +63,8 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
         val productId = dao.insertProduct(product)
         log.info(s"New product inserted. Varenummer ${product.varenummer} got id: $productId")
         dao.insertPrice(product, productId)
+      case null =>
+        throw new RuntimeException(s"findByVarenummer returned null for ${product.varenummer}")
     }
   }
 
@@ -76,7 +76,8 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
 
 case class DownloadResult
 (
-  processed: Int,
+  total: Int,
+  whiskies: Int,
   success: Int,
   failure: Int,
   errors: List[String]

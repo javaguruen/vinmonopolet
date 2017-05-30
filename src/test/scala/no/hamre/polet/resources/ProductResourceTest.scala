@@ -26,7 +26,8 @@ class ProductResourceTest extends FunSuite {
       val result =response.getEntity.asInstanceOf[DownloadResult]
       //val result = ObjectMapperFactory.create.readValue( response.getEntity, classOf[DownloadResult])
       assert( result.failure == 0)
-      assert( result.success == 10)
+      assert( result.total == 10)
+      assert( result.success == 1)
     }
   }
 
