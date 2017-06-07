@@ -30,9 +30,8 @@ class App() extends Application[Config] {
     val productDao = new PoletDao(dataSource)
     val productService = new ProductDataServiceImpl(productDao, new FileDownloaderImpl(config.dataEncoding))
     val productResource = new ProductResource(productService, config.dataUrl)
-    val es = new ESResource(productService, config.dataUrl)
 
-    environment.jersey().register(es)
+    environment.jersey().register(productResource)
   }
 
   override def initialize(bootstrap: Bootstrap[Config]): Unit = {
