@@ -20,6 +20,8 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
     var total = 0
     var success = 0
     var failure = 0
+    var added = 0
+    var priceChanges = 0
     var errors: List[String] = List()
     val lines = data.split("\n")
     log.info(s"${lines.size} lines in file")
@@ -29,8 +31,14 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
       .foreach { p => {
       whiskies += 1
       try {
-        update(p)
+        val stat = update(p)
         success += 1
+        if( stat.added ){
+          added += 1
+        }
+        if( stat.priceChanged ){
+          priceChanges += 1
+        }
         //if( processed > 5) throw StopException("Stopping")
       }catch{
         case e: Exception =>
@@ -41,10 +49,12 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
     }
     }
     log.info(s"Done downloading and parsing file. ${lines.size} lines read, $whiskies whiskies $failure failed and $success succeeded")
-    DownloadResult(lines.size-1, whiskies, success, failure, errors)
+    DownloadResult(lines.size-1, whiskies, success, failure, added, priceChanges, errors)
   }
 
-  def update(product: ProductLine): Unit = {
+  case class UpdateStat(added: Boolean, priceChanged: Boolean)
+
+  def update(product: ProductLine): UpdateStat = {
     dao.findByVarenummer(product.varenummer) match {
       case Some(p) =>
         log.info(s"Found varenummer ${p.varenummer} with id ${p.id}")
@@ -53,16 +63,20 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
         log.info(s"Latest price=$latestPrice")
         if( latestPrice.isEmpty){
           dao.insertPrice(product, p.id)
+          UpdateStat(added = false, priceChanged = true)
         } else if (latestPrice.get.pris == product.pris) {
           log.info(s"Price unchanged for product ${p.id}")
+          UpdateStat(added = false, priceChanged = false)
         } else {
           log.info(s"Price changed from ${latestPrice.get.pris} to ${product.pris} for product ${p.id}")
           dao.insertPrice(product, p.id)
+          UpdateStat(added = false, priceChanged = true)
         }
       case None =>
         val productId = dao.insertProduct(product)
         log.info(s"New product inserted. Varenummer ${product.varenummer} got id: $productId")
         dao.insertPrice(product, productId)
+        UpdateStat(added = true, priceChanged = true)
       case null =>
         throw new RuntimeException(s"findByVarenummer returned null for ${product.varenummer}")
     }
@@ -80,5 +94,7 @@ case class DownloadResult
   whiskies: Int,
   success: Int,
   failure: Int,
+  added: Int,
+  priceChanges: Int,
   errors: List[String]
 )

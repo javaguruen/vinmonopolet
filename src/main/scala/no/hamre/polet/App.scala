@@ -7,7 +7,7 @@ import io.dropwizard.setup.{Bootstrap, Environment}
 import io.federecio.dropwizard.swagger.{SwaggerBundle, SwaggerBundleConfiguration}
 import no.hamre.polet.dao.{H2LiquibaseDataSourceFactory, PoletDao}
 import no.hamre.polet.parser.FileDownloaderImpl
-import no.hamre.polet.resources.ProductResource
+import no.hamre.polet.resources.{ESResource, ProductResource}
 import no.hamre.polet.service.ProductDataServiceImpl
 import org.constretto.dropwizard.ConstrettoBundle
 
@@ -30,8 +30,9 @@ class App() extends Application[Config] {
     val productDao = new PoletDao(dataSource)
     val productService = new ProductDataServiceImpl(productDao, new FileDownloaderImpl(config.dataEncoding))
     val productResource = new ProductResource(productService, config.dataUrl)
+    val es = new ESResource(productService, config.dataUrl)
 
-    environment.jersey().register(productResource)
+    environment.jersey().register(es)
   }
 
   override def initialize(bootstrap: Bootstrap[Config]): Unit = {

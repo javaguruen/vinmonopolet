@@ -1,6 +1,7 @@
 server:
   type: simple
-  rootPath: '/api/v1/*'
+  rootPath: '/*'
+#  rootPath: '/api/v1/*'
   applicationContextPath: /
   connector:
     type: http
