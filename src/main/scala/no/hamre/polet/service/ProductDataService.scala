@@ -9,6 +9,7 @@ trait ProductDataService {
   def updateFromWeb(url: String): DownloadResult
 
   def findProduct(productId: String): Option[Product]
+  def findAllProduct(): List[Product]
 }
 
 class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends ProductDataService with Slf4jLogger {
@@ -85,6 +86,10 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
   override def findProduct(productId: String): Option[Product] = {
     val product = dao.findByVarenummer(productId)
     product.map( p => p.copy(prices = dao.findPrices(p.id)))
+  }
+
+  override def findAllProduct(): List[Product] = {
+    dao.findAll.map( p=> p.copy(prices = dao.findPrices(p.id)))
   }
 }
 

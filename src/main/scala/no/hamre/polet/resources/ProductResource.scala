@@ -43,5 +43,21 @@ class ProductResource(service: ProductDataService, defaultUrl: String) extends S
     }
   }
 
-
+  @GET
+  @Timed
+  def findAllProduct(): Response = {
+    log.info(s"GET /products")
+    try {
+      service.findAllProduct() match {
+        case Nil =>
+          Response.status(NOT_FOUND_404).build()
+        case xs =>
+          Response.ok(xs).build()
+      }
+    } catch{
+      case e: Exception =>
+        log.error(s"Exception getting product")
+        Response.serverError().build()
+    }
+  }
 }
