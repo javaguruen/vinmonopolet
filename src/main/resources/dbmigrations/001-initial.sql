@@ -72,3 +72,6 @@ CREATE TABLE t_price (
 
 --rollback DROP TABLE price;
 
+--changeset javaguruen:2 dbms:all
+ALTER TABLE t_price ADD active_to DATE;
+ALTER TABLE t_price ADD price_change DECIMAL(10,2);
