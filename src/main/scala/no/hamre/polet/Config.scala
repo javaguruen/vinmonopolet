@@ -4,6 +4,7 @@ import javax.validation.Valid
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.dropwizard
+import io.dropwizard.bundles.assets.{AssetsBundleConfiguration, AssetsConfiguration}
 import io.dropwizard.db.DataSourceFactory
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration
 import org.constretto.annotation
@@ -23,5 +24,11 @@ case class Config
   @Configuration
   dataEncoding: String,
   @JsonProperty("swagger")
-  swaggerBundleConfiguration: SwaggerBundleConfiguration
-) extends dropwizard.Configuration
+  swaggerBundleConfiguration: SwaggerBundleConfiguration,
+  @Valid
+  @Configuration
+  @JsonProperty("assets")
+  assets: AssetsConfiguration = AssetsConfiguration.builder().build()
+)extends dropwizard.Configuration with AssetsBundleConfiguration {
+  override def getAssetsConfiguration: AssetsConfiguration = assets
+}

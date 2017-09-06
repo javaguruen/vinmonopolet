@@ -1,13 +1,14 @@
 package no.hamre.polet
 
 import io.dropwizard.Application
+import io.dropwizard.bundles.assets.ConfiguredAssetsBundle
 import io.dropwizard.db.DataSourceFactory
 import io.dropwizard.migrations.MigrationsBundle
 import io.dropwizard.setup.{Bootstrap, Environment}
 import io.federecio.dropwizard.swagger.{SwaggerBundle, SwaggerBundleConfiguration}
 import no.hamre.polet.dao.{H2LiquibaseDataSourceFactory, PoletDao}
 import no.hamre.polet.parser.FileDownloaderImpl
-import no.hamre.polet.resources.{ESResource, ProductResource}
+import no.hamre.polet.resources.ProductResource
 import no.hamre.polet.service.ProductDataServiceImpl
 import org.constretto.dropwizard.ConstrettoBundle
 
@@ -47,5 +48,7 @@ class App() extends Application[Config] {
         t.swaggerBundleConfiguration
       }
     })
+    // Map requests to /dashboard/${1} to be found in the class path at /assets/${1}.
+    bootstrap.addBundle(new ConfiguredAssetsBundle("/assets/", "/"))
   }
 }

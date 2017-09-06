@@ -43,6 +43,7 @@ class ProductResource(service: ProductDataService, defaultUrl: String) extends S
     }
   }
 
+
   @GET
   @Timed
   def findAllProduct(): Response = {
@@ -54,6 +55,21 @@ class ProductResource(service: ProductDataService, defaultUrl: String) extends S
         case xs =>
           Response.ok(xs).build()
       }
+    } catch{
+      case e: Exception =>
+        log.error(s"Exception getting product")
+        Response.serverError().build()
+    }
+  }
+
+  @GET
+  @Timed
+  @Path("/releases")
+  def findProductByReleaseDate(): Response = {
+    log.info(s"GET /products/releases")
+    try {
+      val releases = service.findProductByReleaseDate()
+      Response.ok(releases).build()
     } catch{
       case e: Exception =>
         log.error(s"Exception getting product")

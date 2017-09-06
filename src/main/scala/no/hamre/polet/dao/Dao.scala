@@ -1,11 +1,11 @@
 package no.hamre.polet.dao
 
 import java.lang
-import java.sql.ResultSet
-import java.time.ZoneId
+import java.sql.{Date, ResultSet}
+import java.time.{LocalDate, LocalDateTime, ZoneId}
 import javax.sql.DataSource
 
-import no.hamre.polet.modell.{Price, Product, ProductLine}
+import no.hamre.polet.modell.{MiniProduct, Price, Product, ProductLine}
 import no.hamre.polet.util.Slf4jLogger
 import org.sql2o.data.Row
 import org.sql2o.quirks.PostgresQuirks
@@ -26,11 +26,16 @@ trait Dao {
 
   def findPrices(productId: Long): List[Price]
 
-  def insertPrice(product: ProductLine, product_id: Long): Long
+  def insertPrice(product: ProductLine, product_id: Long, oldPrice: Option[Double]): Long
 
+  def priceChanged(priceId: Long, updated: LocalDateTime)
+
+  def findReleaseDates(): List[LocalDate]
+
+  def findReleasesByDate(releaseDate: LocalDate): List[MiniProduct]
 }
 
-class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler with Slf4jLogger{
+class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler with Slf4jLogger {
   val sql2o = new Sql2o(dataSource, new PostgresQuirks)
 
   override def updateProductTimestamp(id: Long): Unit = {
@@ -45,7 +50,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
       """.stripMargin
       val rows: Long = con.createQuery(sql)
         .addParameter("id", id).executeUpdate().getResult
-      if( rows != 1){
+      if (rows != 1) {
         throw DatabaseException(s"Expected to update only 1 row - was $rows")
       }
       con.commit(true)
@@ -66,49 +71,6 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
       con = sql2o.beginTransaction()
       val products = con.createQuery(sql)
         .executeAndFetchTable().rows().asScala.map(r => mapToProduct(r))
-/*
-        Product(
-          r.getLong("id"),
-          r.getDate("datotid").toInstant.atZone(defaultZoneId).toLocalDateTime,
-          r.getString("varenummer"),
-          r.getString("varenavn"),
-          r.getDouble("volum"),
-          r.getDouble("pris"),
-          r.getDouble("literpris"),
-          r.getString("varetype"),
-          r.getString("produktutvalg"),
-          r.getString("butikkategori"),
-          r.getInteger("fylde"),
-          r.getInteger("friskhet"),
-          r.getInteger("garvestoffer"),
-          r.getInteger("bitterhet"),
-          r.getString("sodme"),
-          r.getString("farge"),
-          r.getString("lukt"),
-          r.getString("smak"),
-          r.getString("passertil01"),
-          r.getString("passertil02"),
-          r.getString("passertil03"),
-          r.getString("land"),
-          r.getString("distrikt"),
-          r.getString("underdistrikt"),
-          r.getInteger("aargang"),
-          r.getString("raastoff"),
-          r.getString("metode"),
-          r.getDouble("alkohol"),
-          r.getString("sukker"),
-          r.getString("syre"),
-          r.getString("lagringsgrad"),
-          r.getString("produsent"),
-          r.getString("grossist"),
-          r.getString("distributor"),
-          r.getString("emballasjetype"),
-          r.getString("korktype"),
-          r.getString("vareurl"),
-          r.getDate("updated").toInstant.atZone(defaultZoneId).toLocalDateTime
-        )
-      )
-*/
       products.toList
     } catch {
       case e: Exception =>
@@ -158,21 +120,6 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
     )
   }
 
-/*
-  private def mapToPrice(r: Row): Price = {
-    Price(
-      r.getLong("id"),
-      r.getDate("datotid").toInstant.atZone(defaultZoneId).toLocalDateTime,
-      r.getString("varenummer"),
-      r.getDouble("volum"),
-      r.getDouble("pris"),
-      r.getDouble("literpris"),
-      r.getString("produktutvalg"),
-      r.getString("butikkategori"),
-      r.getDate("updated").toInstant.atZone(defaultZoneId).toLocalDateTime)
-  }
-
-*/
   override def findByVarenummer(varenummer: String): Option[Product] = {
     val sql = "SELECT * FROM t_product WHERE varenummer=:varenummer"
     var con: Connection = null
@@ -190,22 +137,26 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
       }
     } catch {
       case e: Exception => throw new RuntimeException(e.getMessage, e)
+
     }
   }
 
-  override def insertPrice(product: ProductLine, productId: Long): Long = {
+  override def insertPrice(product: ProductLine, productId: Long, oldPrice: Option[Double]): Long = {
     var con: Connection = null
     try {
       con = sql2o.beginTransaction()
       val sql =
         s"""
            | INSERT INTO t_price (id, product_id, datotid, varenummer, volum, pris, literpris, produktutvalg,
-           |   butikkategori, updated)
+           |   butikkategori, active_to, price_change)
            | VALUES ( nextval('price_id_seq'), :productId, :datotid, :varenummer, :volum, :pris, :literpris, :produktutvalg,
-           |   :butikkategori, CURRENT_TIMESTAMP)
+           |   :butikkategori, null, :priceChange)
       """.stripMargin
+      val priceChange = oldPrice.map(op => product.pris - op).getOrElse(0)
       val id: lang.Long = con.createQuery(sql, true)
-        .bind(product).addParameter("productId", productId)
+        .bind(product)
+        .addParameter("productId", productId)
+        .addParameter("priceChange", priceChange)
         .executeUpdate().getKey(classOf[lang.Long])
       con.commit(true)
       id
@@ -217,6 +168,24 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
     }
   }
 
+  override def priceChanged(priceId: Long, updated: LocalDateTime) {
+    var con: Connection = null
+    try {
+      con = sql2o.beginTransaction()
+      val sql =
+        "UPDATE t_price SET active_to = :updated WHERE id=:priceid"
+      con.createQuery(sql)
+        .addParameter("updated", updated)
+        .addParameter("priceid", priceId)
+        .executeUpdate()
+      con.commit(true)
+    } catch {
+      case e: Exception =>
+        con.rollback(true)
+        throw new RuntimeException(e.getMessage, e)
+    }
+  }
+
 
   override def getLatestPrice(productId: Long): Option[Price] = {
     var con: Connection = null
@@ -224,7 +193,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
       con = sql2o.beginTransaction()
       val sql =
         s"""
-           | SELECT * FROM t_price WHERE product_id=:productid ORDER BY datotid DESC, updated DESC
+           | SELECT * FROM t_price WHERE product_id=:productid AND active_to IS NULL
       """.stripMargin
       val price: Price = con.createQuery(sql)
         .addParameter("productid", productId)
@@ -244,7 +213,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
       con = sql2o.beginTransaction()
       val sql =
         s"""
-           | SELECT * FROM t_price WHERE product_id=:productid ORDER BY datotid DESC, updated DESC
+           | SELECT * FROM t_price WHERE product_id=:productid AND updated IS NULL
       """.stripMargin
       val prices: List[Price] = con.createQuery(sql)
         .addParameter("productid", productId)
@@ -284,10 +253,67 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
         throw new RuntimeException(e.getMessage, e)
     }
   }
+
+  override def findReleaseDates(): List[LocalDate] = {
+    val sql =
+      """
+        | SELECT DISTINCT datotid::date as date FROM t_product ORDER BY 1 DESC
+      """.stripMargin
+    var con: Connection = null
+    try {
+      con = sql2o.beginTransaction()
+      val dates = con.createQuery(sql).executeAndFetchTable()
+        .rows().asScala.toList.map(row =>
+        row.getDate("date").asInstanceOf[Date].toLocalDate
+      )
+      con.commit(true)
+      dates
+    } catch {
+      case e: Exception =>
+        con.rollback(true)
+        //log.error(e.getMessage, e)
+        throw new RuntimeException(e.getMessage, e)
+    }
+
+  }
+
+  override def findReleasesByDate(releaseDate: LocalDate): List[MiniProduct] = {
+    val sql =
+      """
+        | SELECT p.*, price.pris
+        | FROM t_product p
+        |   INNER JOIN t_price price ON price.product_id = p.id AND price.active_to IS NULL
+        | WHERE p.datotid::date = :releaseDate
+        | ORDER BY 1 DESC
+      """.stripMargin
+    var con: Connection = null
+    try {
+      con = sql2o.beginTransaction()
+      val dates = con.createQuery(sql)
+        .addParameter("releaseDate", Date.valueOf(releaseDate))
+        .executeAndFetchTable()
+        .rows().asScala.toList.map(row =>
+        MiniProduct(row.getLong("id"),
+          row.getString("varenummer"),
+          row.getString("varenavn"),
+          row.getDouble("volum"),
+          row.getDouble("pris"),
+          List()
+        )
+      )
+      con.commit(true)
+      dates
+    } catch {
+      case e: Exception =>
+        con.rollback(true)
+        log.error(e.getMessage, e)
+        throw new RuntimeException(e.getMessage, e)
+    }
+  }
 }
 
 trait PriceResultSetHandler extends ResultSetHandler[Price] {
-  val defaultZoneId = ZoneId.systemDefault()
+  val defaultZoneId: ZoneId = ZoneId.systemDefault()
 
   override def handle(resultSet: ResultSet): Price = {
     Price(

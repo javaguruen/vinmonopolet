@@ -1,15 +1,17 @@
 package no.hamre.polet.service
 
 import no.hamre.polet.dao.Dao
-import no.hamre.polet.modell.ProductLine
+import no.hamre.polet.modell
+import no.hamre.polet.modell.{ProductLine, ProductRelease}
 import no.hamre.polet.parser.FileDownloader
 import no.hamre.polet.util.Slf4jLogger
 
 trait ProductDataService {
   def updateFromWeb(url: String): DownloadResult
 
-  def findProduct(productId: String): Option[Product]
-  def findAllProduct(): List[Product]
+  def findProduct(productId: String): Option[modell.Product]
+  def findAllProduct(): List[modell.Product]
+  def findProductByReleaseDate(): List[ProductRelease]
 }
 
 class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends ProductDataService with Slf4jLogger {
@@ -63,32 +65,38 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
         val latestPrice = dao.getLatestPrice(p.id)
         log.info(s"Latest price=$latestPrice")
         if( latestPrice.isEmpty){
-          dao.insertPrice(product, p.id)
+          dao.insertPrice(product, p.id, None)
           UpdateStat(added = false, priceChanged = true)
         } else if (latestPrice.get.pris == product.pris) {
           log.info(s"Price unchanged for product ${p.id}")
           UpdateStat(added = false, priceChanged = false)
         } else {
           log.info(s"Price changed from ${latestPrice.get.pris} to ${product.pris} for product ${p.id}")
-          dao.insertPrice(product, p.id)
+          dao.priceChanged(latestPrice.get.id, product.datotid)
+          dao.insertPrice(product, p.id, Some(product.pris))
           UpdateStat(added = false, priceChanged = true)
         }
       case None =>
         val productId = dao.insertProduct(product)
         log.info(s"New product inserted. Varenummer ${product.varenummer} got id: $productId")
-        dao.insertPrice(product, productId)
+        dao.insertPrice(product, productId, None)
         UpdateStat(added = true, priceChanged = true)
       case null =>
         throw new RuntimeException(s"findByVarenummer returned null for ${product.varenummer}")
     }
   }
 
-  override def findProduct(productId: String): Option[Product] = {
+  override def findProduct(productId: String): Option[modell.Product] = {
     val product = dao.findByVarenummer(productId)
     product.map( p => p.copy(prices = dao.findPrices(p.id)))
   }
 
-  override def findAllProduct(): List[Product] = {
+  override def findProductByReleaseDate(): List[ProductRelease] = {
+    val product = dao.findReleaseDates()
+    Nil
+  }
+
+  override def findAllProduct(): List[modell.Product] = {
     dao.findAll.map( p=> p.copy(prices = dao.findPrices(p.id)))
   }
 }

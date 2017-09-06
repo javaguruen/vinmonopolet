@@ -1,6 +1,7 @@
 package no.hamre.polet.dao
 
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 import no.hamre.polet.modell.ProductLine
 import org.scalatest.FunSuite
@@ -12,41 +13,41 @@ class DaoTest extends FunSuite {
       val id = dao.insertProduct(product)
       assert(id > 0)
       val storedProduct = dao.findByVarenummer(product.varenummer)
-      assert( storedProduct.isDefined)
-      assert( storedProduct.get.datotid == product.datotid)
-      assert( storedProduct.get.varenummer == product.varenummer)
-      assert( storedProduct.get.varenavn == product.varenavn)
-      assert( storedProduct.get.varetype == product.varetype)
-      assert( storedProduct.get.volum == product.volum)
-      assert( storedProduct.get.fylde == product.fylde)
-      assert( storedProduct.get.friskhet == product.friskhet)
-      assert( storedProduct.get.garvestoffer == product.garvestoffer)
-      assert( storedProduct.get.bitterhet == product.bitterhet)
-      assert( storedProduct.get.sodme == product.sodme)
-      assert( storedProduct.get.farge == product.farge)
-      assert( storedProduct.get.lukt == product.lukt)
-      assert( storedProduct.get.smak == product.smak)
-      assert( storedProduct.get.passertil01 == product.passertil01)
-      assert( storedProduct.get.passertil02 == product.passertil02)
-      assert( storedProduct.get.passertil03 == product.passertil03)
-      assert( storedProduct.get.land == product.land)
-      assert( storedProduct.get.distrikt == product.distrikt)
-      assert( storedProduct.get.underdistrikt == product.underdistrikt)
-      assert( storedProduct.get.aargang == product.aargang)
-      assert( storedProduct.get.raastoff == product.raastoff)
-      assert( storedProduct.get.metode == product.metode)
-      assert( storedProduct.get.alkohol == product.alkohol)
-      assert( storedProduct.get.sukker == product.sukker)
-      assert( storedProduct.get.syre == product.syre)
-      assert( storedProduct.get.lagringsgrad == product.lagringsgrad)
-      assert( storedProduct.get.produsent == product.produsent)
-      assert( storedProduct.get.grossist == product.grossist)
-      assert( storedProduct.get.distributor == product.distributor)
-      assert( storedProduct.get.emballasjetype == product.emballasjetype)
-      assert( storedProduct.get.korktype == product.korktype)
-      assert( storedProduct.get.vareurl == product.vareurl)
-      assert( storedProduct.get.active )
-      assert( storedProduct.get.updated != null)
+      assert(storedProduct.isDefined)
+      assert(storedProduct.get.datotid == product.datotid)
+      assert(storedProduct.get.varenummer == product.varenummer)
+      assert(storedProduct.get.varenavn == product.varenavn)
+      assert(storedProduct.get.varetype == product.varetype)
+      assert(storedProduct.get.volum == product.volum)
+      assert(storedProduct.get.fylde == product.fylde)
+      assert(storedProduct.get.friskhet == product.friskhet)
+      assert(storedProduct.get.garvestoffer == product.garvestoffer)
+      assert(storedProduct.get.bitterhet == product.bitterhet)
+      assert(storedProduct.get.sodme == product.sodme)
+      assert(storedProduct.get.farge == product.farge)
+      assert(storedProduct.get.lukt == product.lukt)
+      assert(storedProduct.get.smak == product.smak)
+      assert(storedProduct.get.passertil01 == product.passertil01)
+      assert(storedProduct.get.passertil02 == product.passertil02)
+      assert(storedProduct.get.passertil03 == product.passertil03)
+      assert(storedProduct.get.land == product.land)
+      assert(storedProduct.get.distrikt == product.distrikt)
+      assert(storedProduct.get.underdistrikt == product.underdistrikt)
+      assert(storedProduct.get.aargang == product.aargang)
+      assert(storedProduct.get.raastoff == product.raastoff)
+      assert(storedProduct.get.metode == product.metode)
+      assert(storedProduct.get.alkohol == product.alkohol)
+      assert(storedProduct.get.sukker == product.sukker)
+      assert(storedProduct.get.syre == product.syre)
+      assert(storedProduct.get.lagringsgrad == product.lagringsgrad)
+      assert(storedProduct.get.produsent == product.produsent)
+      assert(storedProduct.get.grossist == product.grossist)
+      assert(storedProduct.get.distributor == product.distributor)
+      assert(storedProduct.get.emballasjetype == product.emballasjetype)
+      assert(storedProduct.get.korktype == product.korktype)
+      assert(storedProduct.get.vareurl == product.vareurl)
+      assert(storedProduct.get.active)
+      assert(storedProduct.get.updated != null)
     }
   }
 
@@ -57,14 +58,34 @@ class DaoTest extends FunSuite {
       Thread.sleep(10)
       dao.updateProductTimestamp(id)
       val updated = dao.findByVarenummer(product.varenummer)
-      assert( updated.get.updated.isAfter( inserted.get.updated) )
+      assert(updated.get.updated.isAfter(inserted.get.updated))
+    }
+  }
+
+  test("Get timestamps") {
+    new ProductLineTestData {
+      val id = dao.insertProduct(product)
+      val dates = dao.findReleaseDates()
+      assert(dates.size == 1)
+      assert(dates.head.equals(product.datotid.toLocalDate))
+    }
+  }
+
+  test("Get mini products") {
+    new ProductLineTestData {
+      val productId = dao.insertProduct(product)
+      val id = dao.insertPrice(product, productId, None)
+      val products = dao.findReleasesByDate(product.datotid.toLocalDate)
+      assert(products.size == 1)
+      val prod = products.head
+      assert( prod.price == product.pris)
     }
   }
 
   test("Insert price") {
     new ProductLineTestData {
       val productId = dao.insertProduct(product)
-      val id = dao.insertPrice(product, productId)
+      val id = dao.insertPrice(product, productId, None)
       assert(id > 0)
     }
   }
@@ -72,13 +93,14 @@ class DaoTest extends FunSuite {
   test("Get latets price") {
     new ProductLineTestData {
       val productId = dao.insertProduct(product)
-      val idFirst = dao.insertPrice(product, productId)
+      val idFirst = dao.insertPrice(product, productId, None)
       Thread.sleep(10)
       val newPrice = 1000.50
-      val idSecond = dao.insertPrice(product.copy(datotid=LocalDateTime.now(), pris=newPrice), productId)
+      dao.priceChanged(idFirst, product.datotid.plus(1, ChronoUnit.DAYS))
+      val idSecond = dao.insertPrice(product.copy(datotid = LocalDateTime.now(), pris = newPrice), productId, Some(product.pris))
       val latetsPrice = dao.getLatestPrice(productId)
-      assert( latetsPrice.get.id == idSecond)
-      assert( latetsPrice.get.pris == newPrice)
+      assert(latetsPrice.get.id == idSecond)
+      assert(latetsPrice.get.pris == newPrice)
     }
   }
 
@@ -87,31 +109,31 @@ class DaoTest extends FunSuite {
       dao.insertProduct(product)
       dao.insertProduct(product.copy(varenummer = "321"))
       val products = dao.findAll
-      assert( products.size == 2)
+      assert(products.size == 2)
     }
   }
 
-      /*
-        test("Non-existing product gives None") {
-          new ProductLineTestData {
-            val connection = dao.sql2o.beginTransaction()
-            val productId = dao.update(product)
-            val foundId = dao.productExists(product.varenummer, connection)
-            connection.rollback()
-            assert(foundId.isDefined)
-            assert(foundId.get == productId)
-          }
-        }
+  /*
+    test("Non-existing product gives None") {
+      new ProductLineTestData {
+        val connection = dao.sql2o.beginTransaction()
+        val productId = dao.update(product)
+        val foundId = dao.productExists(product.varenummer, connection)
+        connection.rollback()
+        assert(foundId.isDefined)
+        assert(foundId.get == productId)
+      }
+    }
 
-        test("Existing product gives Some(id)") {
-          new ProductLineTestData {
-            val connection = dao.sql2o.beginTransaction()
-            val id = dao.productExists(product.varenummer, connection)
-            connection.rollback()
-            assert(id.isEmpty)
-          }
-        }
-      */
+    test("Existing product gives Some(id)") {
+      new ProductLineTestData {
+        val connection = dao.sql2o.beginTransaction()
+        val id = dao.productExists(product.varenummer, connection)
+        connection.rollback()
+        assert(id.isEmpty)
+      }
+    }
+  */
 
 }
 
