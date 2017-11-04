@@ -213,7 +213,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
       con = sql2o.beginTransaction()
       val sql =
         s"""
-           | SELECT * FROM t_price WHERE product_id=:productid AND updated IS NULL
+           | SELECT * FROM t_price WHERE product_id=:productid
       """.stripMargin
       val prices: List[Price] = con.createQuery(sql)
         .addParameter("productid", productId)
