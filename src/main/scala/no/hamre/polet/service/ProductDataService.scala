@@ -1,5 +1,7 @@
 package no.hamre.polet.service
 
+import java.time.LocalDate
+
 import no.hamre.polet.dao.Dao
 import no.hamre.polet.modell
 import no.hamre.polet.modell.{ProductLine, ProductRelease}
@@ -9,7 +11,7 @@ import no.hamre.polet.util.Slf4jLogger
 trait ProductDataService {
   def updateFromWeb(url: String): DownloadResult
 
-  def findProduct(productId: String): Option[modell.Product]
+  def findProduct(productId: Long): Option[modell.Product]
   def findAllProduct(): List[modell.Product]
   def findProductByReleaseDate(): List[ProductRelease]
 }
@@ -86,14 +88,16 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
     }
   }
 
-  override def findProduct(productId: String): Option[modell.Product] = {
-    val product = dao.findByVarenummer(productId)
+  override def findProduct(productId: Long): Option[modell.Product] = {
+    val product = dao.findById(productId)
     product.map( p => p.copy(prices = dao.findPrices(p.id)))
   }
 
   override def findProductByReleaseDate(): List[ProductRelease] = {
-    val product = dao.findReleaseDates()
-    Nil
+    val releaseDates: List[LocalDate] = dao.findReleaseDates()
+    val miniProducts = dao.findReleasesByDate(releaseDates.head)
+    ProductRelease(releaseDates.head, miniProducts, List()) ::
+      releaseDates.tail.map( date => ProductRelease(date, List(), List()))
   }
 
   override def findAllProduct(): List[modell.Product] = {

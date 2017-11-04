@@ -13,7 +13,7 @@ trait ProductResourceTestData{
   val dao = new PoletDao(H2LiquibaseDataSourceFactory.createDataSource("polet"))
   val service = new ProductDataServiceImpl(dao, new MockFileDownloader)
   val resource = new ProductResource(service, url)
-  val ardbeg10ProductId = "4596101"
+  val ardbeg10ProductId = 4596101
   val ardbeg10Name = "Ardbeg 10 Years Old"
 }
 

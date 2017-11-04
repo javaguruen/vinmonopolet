@@ -18,6 +18,8 @@ trait Dao {
 
   def findByVarenummer(varenummer: String): Option[Product]
 
+  def findById(id: Long): Option[Product]
+
   def updateProductTimestamp(id: Long): Unit
 
   def insertProduct(product: ProductLine): Long
@@ -134,6 +136,27 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
         case Nil => None
         case x :: Nil => Some(x)
         case _ => throw new RuntimeException(s"Too many products with varenummer $varenummer")
+      }
+    } catch {
+      case e: Exception => throw new RuntimeException(e.getMessage, e)
+
+    }
+  }
+
+  override def findById(id: Long): Option[Product] = {
+    val sql = "SELECT * FROM t_product WHERE id=:id"
+    var con: Connection = null
+    try {
+      //val defaultZoneId = ZoneId.systemDefault()
+      con = sql2o.beginTransaction()
+      val products: List[Product] = con.createQuery(sql)
+        .addParameter("id", id)
+        .executeAndFetchTable().rows().asScala.map(r => mapToProduct(r)).toList
+      con.close()
+      products match {
+        case Nil => None
+        case x :: Nil => Some(x)
+        case _ => throw new RuntimeException(s"Too many products with id $id")
       }
     } catch {
       case e: Exception => throw new RuntimeException(e.getMessage, e)

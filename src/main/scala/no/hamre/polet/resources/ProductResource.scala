@@ -30,7 +30,7 @@ class ProductResource(service: ProductDataService, defaultUrl: String) extends S
   @GET
   @Timed
   @Path("{productid}")
-  def findProduct(@PathParam("productid") productId: String): Response = {
+  def findProduct(@PathParam("productid") productId: Long): Response = {
     log.info(s"GET /products/$productId")
     try {
       service.findProduct(productId)
