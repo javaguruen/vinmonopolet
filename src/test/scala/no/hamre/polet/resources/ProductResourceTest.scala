@@ -13,7 +13,7 @@ trait ProductResourceTestData{
   val dao = new PoletDao(H2LiquibaseDataSourceFactory.createDataSource("polet"))
   val service = new ProductDataServiceImpl(dao, new MockFileDownloader)
   val resource = new ProductResource(service, url)
-  val ardbeg10ProductId = 4596101
+  val ardbeg10Id = 100
   val ardbeg10Name = "Ardbeg 10 Years Old"
 }
 
@@ -34,7 +34,7 @@ class ProductResourceTest extends FunSuite {
   test("Found product should return OK (200)"){
     new ProductResourceTestData{
       resource.download(url)
-      val response = resource.findProduct(ardbeg10ProductId)
+      val response = resource.findProduct(ardbeg10Id)
       assert( response.getStatus == HttpStatus.OK_200)
       val ardbeg10 =response.getEntity.asInstanceOf[Product]
       assert(ardbeg10.varenavn == ardbeg10Name)
@@ -43,7 +43,7 @@ class ProductResourceTest extends FunSuite {
 
   test("Non-existing product should return NOT_FOUND (404)"){
     new ProductResourceTestData{
-      val response = resource.findProduct("-10000")
+      val response = resource.findProduct(-10000)
       assert( response.getStatus == HttpStatus.NOT_FOUND_404)
     }
   }

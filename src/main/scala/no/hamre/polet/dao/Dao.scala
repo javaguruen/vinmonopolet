@@ -15,7 +15,7 @@ import scala.collection.JavaConverters._
 
 trait Dao {
   def findAll: List[Product]
-
+  def findLatestReleases: List[Product]
   def findByVarenummer(varenummer: String): Option[Product]
 
   def findById(id: Long): Option[Product]
@@ -67,6 +67,29 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
     val sql =
       """
         | SELECT * from t_product
+      """.stripMargin
+    var con: Connection = null
+    try {
+      con = sql2o.beginTransaction()
+      val products = con.createQuery(sql)
+        .executeAndFetchTable().rows().asScala.map(r => mapToProduct(r))
+      products.toList
+    } catch {
+      case e: Exception =>
+        con.rollback(true)
+        throw new RuntimeException(e.getMessage, e)
+    }
+  }
+
+  override def findLatestReleases: List[Product] = {
+    val sql =
+      """
+        | SELECT *
+        | FROM t_product p
+        | WHERE p.datotid::date = (
+        |	  SELECT max( prod.datotid::date ) FROM t_product prod
+        | )
+        |
       """.stripMargin
     var con: Connection = null
     try {
@@ -229,6 +252,16 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
         throw new RuntimeException(e.getMessage, e)
     }
   }
+/*
+
+
+SELECT distinct date(datotid)
+FROM t_product
+order by 1
+;
+ */
+
+
 
   override def findPrices(productId: Long): List[Price] = {
     var con: Connection = null

@@ -29,16 +29,16 @@ class ProductResource(service: ProductDataService, defaultUrl: String) extends S
 
   @GET
   @Timed
-  @Path("{productid}")
-  def findProduct(@PathParam("productid") productId: Long): Response = {
-    log.info(s"GET /products/$productId")
+  @Path("{id}")
+  def findProduct(@PathParam("id") id: Long): Response = {
+    log.info(s"GET /products/$id")
     try {
-      service.findProduct(productId)
+      service.findProduct(id)
         .map(p => Response.ok(p).build())
         .getOrElse(Response.status(NOT_FOUND_404).build())
     } catch{
       case e: Exception =>
-        log.error(s"Exception getting product=$productId")
+        log.error(s"Exception getting product=$id")
         Response.serverError().build()
     }
   }
@@ -64,6 +64,21 @@ class ProductResource(service: ProductDataService, defaultUrl: String) extends S
 
   @GET
   @Timed
+  @Path("/latest")
+  def findLatestReleases(): Response = {
+    log.info(s"GET /products/latest")
+    try {
+      val releases = service.findLatestReleases()
+      Response.ok(releases).build()
+    } catch{
+      case e: Exception =>
+        log.error(s"Exception getting latest releases", e)
+        Response.serverError().build()
+    }
+  }
+
+  @GET
+  @Timed
   @Path("/releases")
   def findProductByReleaseDate(): Response = {
     log.info(s"GET /products/releases")
@@ -72,7 +87,7 @@ class ProductResource(service: ProductDataService, defaultUrl: String) extends S
       Response.ok(releases).build()
     } catch{
       case e: Exception =>
-        log.error(s"Exception getting product")
+        log.error(s"Exception getting products by release date")
         Response.serverError().build()
     }
   }

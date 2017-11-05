@@ -1,6 +1,5 @@
 server:
   type: simple
-#  rootPath: '/*'
   rootPath: '/api/v1/*'
   applicationContextPath: /
   connector:
