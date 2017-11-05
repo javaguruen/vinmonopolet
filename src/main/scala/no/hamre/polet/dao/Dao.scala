@@ -30,7 +30,7 @@ trait Dao {
 
   def insertPrice(product: ProductLine, product_id: Long, oldPrice: Option[Double]): Long
 
-  def priceChanged(priceId: Long, updated: LocalDateTime)
+  def priceChanged(priceId: Long, updated: LocalDateTime, priceChange: Double)
 
   def findReleaseDates(): List[LocalDate]
 
@@ -214,15 +214,16 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
     }
   }
 
-  override def priceChanged(priceId: Long, updated: LocalDateTime) {
+  override def priceChanged(priceId: Long, updated: LocalDateTime, priceChange: Double) {
     var con: Connection = null
     try {
       con = sql2o.beginTransaction()
       val sql =
-        "UPDATE t_price SET active_to = :updated WHERE id=:priceid"
+        "UPDATE t_price SET active_to = :updated, price_change=:priceChange WHERE id=:priceid"
       con.createQuery(sql)
         .addParameter("updated", updated)
         .addParameter("priceid", priceId)
+        .addParameter("priceChange", priceChange)
         .executeUpdate()
       con.commit(true)
     } catch {

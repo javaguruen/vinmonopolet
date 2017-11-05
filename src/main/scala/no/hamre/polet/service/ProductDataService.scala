@@ -80,7 +80,7 @@ class ProductDataServiceImpl(dao: Dao, downloader: FileDownloader) extends Produ
           UpdateStat(added = false, priceChanged = false)
         } else {
           log.info(s"Price changed from ${latestPrice.get.pris} to ${product.pris} for product ${p.id}")
-          dao.priceChanged(latestPrice.get.id, product.datotid)
+          dao.priceChanged(latestPrice.get.id, product.datotid, product.pris-latestPrice.get.pris)
           dao.insertPrice(product, p.id, Some(product.pris))
           UpdateStat(added = false, priceChanged = true)
         }

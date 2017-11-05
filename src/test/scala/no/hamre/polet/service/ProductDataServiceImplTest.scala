@@ -99,7 +99,7 @@ class ProductDataServiceImplTest extends FunSuite {
       verify(dao, times(1)).findByVarenummer(productLine.varenummer)
       verify(dao, times(0)).insertProduct(productLine)
       verify(dao, times(1)).updateProductTimestamp(idProd)
-      verify(dao, times(1)).priceChanged(price.id, productLineWithNewPrice.datotid)
+      verify(dao, times(1)).priceChanged(price.id, productLineWithNewPrice.datotid, productLineWithNewPrice.pris-price.pris)
       verify(dao, times(1)).getLatestPrice(idProd)
       verify(dao, times(1)).insertPrice(productLineWithNewPrice, productLineWithId.id, Some(productLineWithNewPrice.pris))
     }

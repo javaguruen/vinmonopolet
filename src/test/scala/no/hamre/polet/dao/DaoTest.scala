@@ -96,7 +96,7 @@ class DaoTest extends FunSuite {
       val idFirst = dao.insertPrice(product, productId, None)
       Thread.sleep(10)
       val newPrice = 1000.50
-      dao.priceChanged(idFirst, product.datotid.plus(1, ChronoUnit.DAYS))
+      dao.priceChanged(idFirst, product.datotid.plus(1, ChronoUnit.DAYS), newPrice-product.pris)
       val idSecond = dao.insertPrice(product.copy(datotid = LocalDateTime.now(), pris = newPrice), productId, Some(product.pris))
       val latetsPrice = dao.getLatestPrice(productId)
       assert(latetsPrice.get.id == idSecond)
