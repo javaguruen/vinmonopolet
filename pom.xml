@@ -6,10 +6,10 @@
     <version>0.1.0-SNAPSHOT</version>
 
     <properties>
-        <dropwizard.version>1.1.0</dropwizard.version>
+        <dropwizard.version>1.2.2</dropwizard.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jackson.version>2.8.7</jackson.version>
-        <scala.version>2.12.1</scala.version>
+        <scala.version>2.12.4</scala.version>
         <scala-major.version>2.12</scala-major.version>
         <scalatest.version>3.0.1</scalatest.version>
         <sql2o.version>1.5.4</sql2o.version>
@@ -17,7 +17,7 @@
         <liquibase.version>3.5.1</liquibase.version>
         <slf4j.version>1.7.21</slf4j.version>
         <mockito.version>2.7.22</mockito.version>
-        <smoketurner-swagger.version>1.1.0-1</smoketurner-swagger.version>
+        <smoketurner-swagger.version>1.2.2-1</smoketurner-swagger.version>
         <constretto.version>2.2.3</constretto.version>
         <constretto-dropwizard.version>1.1</constretto-dropwizard.version>
         <snakeyaml.version>1.17</snakeyaml.version>
@@ -40,11 +40,14 @@
         <dependency>
             <groupId>io.dropwizard-bundles</groupId>
             <artifactId>dropwizard-configurable-assets-bundle</artifactId>
-            <version>1.0.5</version>
         </dependency>
         <dependency>
             <groupId>com.smoketurner</groupId>
             <artifactId>dropwizard-swagger</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-scala-module</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
@@ -112,6 +115,11 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>io.dropwizard-bundles</groupId>
+                <artifactId>dropwizard-configurable-assets-bundle</artifactId>
+                <version>${dropwizard.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
                 <version>${jackson.version}</version>
@@ -122,6 +130,11 @@
                 <groupId>com.smoketurner</groupId>
                 <artifactId>dropwizard-swagger</artifactId>
                 <version>${smoketurner-swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-scala-module</artifactId>
+                <version>1.0.3</version>
             </dependency>
             <dependency>
                 <groupId>org.sql2o</groupId>

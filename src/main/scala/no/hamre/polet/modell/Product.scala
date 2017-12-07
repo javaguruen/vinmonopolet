@@ -2,6 +2,10 @@ package no.hamre.polet.modell
 
 import java.time.LocalDateTime
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.annotations.ApiModelProperty
+
+import scala.annotation.meta.field
 import scala.beans.BeanProperty
 
 case class Price
@@ -19,11 +23,11 @@ case class Price
 
 case class Product
 (
-  @BeanProperty id: Long,
+  @(JsonProperty @field)(required = true) id: Long,
   @BeanProperty datotid: LocalDateTime,
-  @BeanProperty varenummer: String,
-  @BeanProperty varenavn: String,
-  @BeanProperty varetype: String,
+  varenummer: String,
+  @ApiModelProperty(required = true) varenavn: String,
+  @ApiModelProperty(required = false) varetype: String,
   @BeanProperty volum: Double,
   @BeanProperty fylde: Int,
   @BeanProperty friskhet: Int,
