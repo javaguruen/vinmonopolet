@@ -1,12 +1,13 @@
 package no.hamre.polet.resources
 
+import java.util.Optional
 import javax.validation.constraints.NotNull
 import javax.ws.rs.core.{MediaType, Response}
 import javax.ws.rs._
 
 import com.codahale.metrics.annotation.Timed
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.swagger.annotations.{Api, ApiResponse, ApiResponses}
+import io.swagger.annotations.{Api, ApiModelProperty, ApiResponse, ApiResponses}
 import no.hamre.polet.modell.Product
 import no.hamre.polet.service.ProductDataService
 import no.hamre.polet.util.Slf4jLogger
@@ -70,7 +71,10 @@ class ProductResource(service: ProductDataService, defaultUrl: String) extends S
     @BeanProperty beanProp: String,
     @BeanProperty beanPropOption: Option[String],
     @NotNull notNull: String,
-    optionNone: Option[String] = None
+    optionNone: Option[String] = None,
+    javaOptional: Optional[String],
+    javaOptionalInt: Optional[Int],
+    @ApiModelProperty(dataType = "text", required = false) apiModProp: Option[String]
   )
 
   @GET
