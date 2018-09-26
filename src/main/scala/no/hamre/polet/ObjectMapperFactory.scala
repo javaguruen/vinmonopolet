@@ -9,6 +9,7 @@ object ObjectMapperFactory {
     objectMapper.registerModule( DefaultScalaModule )
     objectMapper.registerModule(new JavaTimeModule())
     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    objectMapper.enable(SerializationFeature.INDENT_OUTPUT)
   }
   def create : ObjectMapper = {
     configure( new ObjectMapper )
