@@ -28,6 +28,11 @@ class App() extends Application[Config] {
       case true => H2LiquibaseDataSourceFactory.createDataSource("polet")
       case false => config.database.build(environment.metrics(), "polet")
     }
+
+    if( config.loadTestdata ){
+      TestdataLoader.load(dataSource)
+    }
+
     val productDao = new PoletDao(dataSource)
     val productService = new ProductDataServiceImpl(productDao, new FileDownloaderImpl(config.dataEncoding))
     val productResource = new ProductResource(productService, config.dataUrl)
