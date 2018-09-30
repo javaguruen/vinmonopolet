@@ -12,7 +12,7 @@ object TestdataLoader extends Slf4jLogger {
 
   def load(dataSource: DataSource): Unit = {
     log.info(s"Loading testdata from $testdataFilename")
-    val source = Source.fromInputStream(getClass.getResourceAsStream(testdataFilename))
+    val source = Source.fromInputStream(getClass.getResourceAsStream(testdataFilename), "utf-8")
     val text = source.mkString
     source.close()
     val sql2o = new Sql2o(dataSource, new PostgresQuirks())
