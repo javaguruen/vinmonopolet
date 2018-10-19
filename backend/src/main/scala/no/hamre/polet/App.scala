@@ -54,6 +54,6 @@ class App() extends Application[Config] {
       }
     })
     // Map requests to /dashboard/${1} to be found in the class path at /assets/${1}.
-    bootstrap.addBundle(new ConfiguredAssetsBundle("/assets/", "/"))
+    bootstrap.addBundle(new ConfiguredAssetsBundle("/public/", "/", "index.html"))
   }
 }
