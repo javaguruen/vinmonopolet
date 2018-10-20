@@ -2,3 +2,6 @@
 target/
 *.iml
 dependency-reduced-pom.xml
+backend/src/main/resources/public/
+frontend/node/
+
