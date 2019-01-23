@@ -2,19 +2,25 @@
   <div class="home">
     <h2>{{products.length}} endringer ({{sistEndret}})</h2>
       <b-table striped responsive :items="products" :fields="fields">
-    </b-table>
+        <!-- A virtual composite column -->
+        <template slot="change" slot-scope="data">
+          <font-awesome-icon :icon=findChangeIcon(data.item.prices)></font-awesome-icon>
+        </template>
+      </b-table>
+
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import axios from 'axios'
+import {fasCartPlus} from '@fortawesome/free-solid-svg-icons'
 
 export default {
   name: 'home',
   data () {
     return {
-      fields: ['produsent', 'varenavn', 'volum'],
+      fields: [{ key: 'change', label: 'Change' }, 'produsent', 'varenavn', 'volum'],
       sistEndret: '',
       products: [],
       response: {},
@@ -25,6 +31,12 @@ export default {
     this.getLatest() // method1 will execute at pageload
   },
   methods: {
+    findChangeIcon: function ( prices ) {
+      const numPrices = prices.length
+      if ( numPrices === 1 ) return "cart-plus"
+      if ( prices[numPrices-1].pris > prices[numPrices-2].pris) return "angle-double-up"
+      return "angle-double-down"
+    },
     getLatest: function () {
       axios.get(`/api/v1/products/latest`)
         .then(response => {
