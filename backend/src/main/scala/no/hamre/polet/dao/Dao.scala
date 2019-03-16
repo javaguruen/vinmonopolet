@@ -84,7 +84,7 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
   override def findLatestReleases: List[Product] = {
     val sql =
       """
-        | SELECT *
+        | SELECT p.*
         | FROM t_product p
         | INNER JOIN t_price pr ON pr.product_id=p.id
         | WHERE
