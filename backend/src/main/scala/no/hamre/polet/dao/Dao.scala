@@ -86,10 +86,11 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
       """
         | SELECT *
         | FROM t_product p
-        | WHERE p.datotid::date = (
-        |	  SELECT max( prod.datotid::date ) FROM t_product prod
-        | )
-        |
+        | INNER JOIN t_price pr ON pr.product_id=p.id
+        | WHERE
+        |	  pr.datotid::date = (
+        |	    SELECT max( prod.datotid::date ) FROM t_product prod
+        | 	)
       """.stripMargin
     var con: Connection = null
     try {
