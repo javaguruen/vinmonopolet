@@ -271,7 +271,10 @@ order by 1
       con = sql2o.beginTransaction()
       val sql =
         s"""
-           | SELECT * FROM t_price WHERE product_id=:productid
+           | SELECT *
+           | FROM t_price
+           | WHERE product_id=:productid
+           | ORDER BY datotid DESC
       """.stripMargin
       val prices: List[Price] = con.createQuery(sql)
         .addParameter("productid", productId)
