@@ -35,7 +35,7 @@ export default {
       const numPrices = prices.length
       if( numPrices === 0) return ""
       if ( numPrices === 1 ) return "plus"
-      if ( prices[numPrices].pris > prices[1].pris)
+      if ( prices[0].pris > prices[1].pris)
         return "angle-double-up"
       return "angle-double-down"
     },
