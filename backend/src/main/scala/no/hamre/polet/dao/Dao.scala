@@ -84,12 +84,13 @@ class PoletDao(dataSource: DataSource) extends Dao with PriceResultSetHandler wi
   override def findLatestReleases: List[Product] = {
     val sql =
       """
-        | SELECT *
+        | SELECT p.*
         | FROM t_product p
-        | WHERE p.updated::date = (
-        |	  SELECT max( prod.datotid::date ) FROM t_product prod
-        | )
-        |
+        | INNER JOIN t_price pr ON pr.product_id=p.id
+        | WHERE
+        |	  pr.datotid::date = (
+        |	    SELECT max( prod.datotid::date ) FROM t_product prod
+        | 	)
       """.stripMargin
     var con: Connection = null
     try {
@@ -270,7 +271,10 @@ order by 1
       con = sql2o.beginTransaction()
       val sql =
         s"""
-           | SELECT * FROM t_price WHERE product_id=:productid
+           | SELECT *
+           | FROM t_price
+           | WHERE product_id=:productid
+           | ORDER BY datotid DESC
       """.stripMargin
       val prices: List[Price] = con.createQuery(sql)
         .addParameter("productid", productId)

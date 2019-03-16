@@ -33,8 +33,10 @@ export default {
   methods: {
     findChangeIcon: function ( prices ) {
       const numPrices = prices.length
+      if( numPrices === 0) return ""
       if ( numPrices === 1 ) return "plus"
-      if ( prices[numPrices-1].pris > prices[numPrices-2].pris) return "angle-double-up"
+      if ( prices[0].pris > prices[1].pris)
+        return "angle-double-up"
       return "angle-double-down"
     },
     getLatest: function () {
