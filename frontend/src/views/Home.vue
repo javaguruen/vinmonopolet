@@ -45,7 +45,8 @@ export default {
           // JSON responses are automatically parsed.
           this.response = response.data
           this.products = response.data
-          this.sistEndret = this.products[0].datotid.substring(0, 10)
+          const dates = this.products.flatMap(prod => prod.prices).map( price => new Date(price.datotid.substring(0, 10)) )
+          this.sistEndret = new Date(Math.max.apply(null,dates))
         })
         .catch(e => {
           this.errors.push(e)
