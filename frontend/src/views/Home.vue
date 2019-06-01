@@ -6,6 +6,9 @@
         <template slot="change" slot-scope="data">
           <font-awesome-icon :icon=findChangeIcon(data.item.prices)></font-awesome-icon>
         </template>
+        <template slot="price" slot-scope="data">
+          {{data.item.prices[0].pris}}
+        </template>
       </b-table>
 
   </div>
@@ -14,13 +17,13 @@
 <script>
 // @ is an alias to /src
 import axios from 'axios'
-import {fasCartPlus} from '@fortawesome/free-solid-svg-icons'
+// import { fasCartPlus } from '@fortawesome/free-solid-svg-icons'
 
 export default {
   name: 'home',
   data () {
     return {
-      fields: [{ key: 'change', label: 'Change' }, 'produsent', 'varenavn', 'volum'],
+      fields: [{ key: 'change', label: 'Change' }, 'produsent', 'varenavn', 'volum', { key: 'price', label: 'Pris' }],
       sistEndret: '',
       products: [],
       response: {},
@@ -31,13 +34,14 @@ export default {
     this.getLatest() // method1 will execute at pageload
   },
   methods: {
-    findChangeIcon: function ( prices ) {
+    findChangeIcon: function (prices) {
       const numPrices = prices.length
-      if( numPrices === 0) return ""
-      if ( numPrices === 1 ) return "plus"
-      if ( prices[0].pris > prices[1].pris)
-        return "angle-double-up"
-      return "angle-double-down"
+      if (numPrices === 0) { return '' }
+      if (numPrices === 1) { return 'plus' }
+      if (prices[0].pris > prices[1].pris) {
+        return 'angle-double-up'
+      }
+      return 'angle-double-down'
     },
     getLatest: function () {
       axios.get(`/api/v1/products/latest`)
@@ -45,8 +49,8 @@ export default {
           // JSON responses are automatically parsed.
           this.response = response.data
           this.products = response.data
-          const dates = this.products.flatMap(prod => prod.prices).map( price => new Date(price.datotid.substring(0, 10)) )
-          this.sistEndret = new Date(Math.max.apply(null,dates)).toISOString().slice(0,10)
+          const dates = this.products.flatMap(prod => prod.prices).map(price => new Date(price.datotid.substring(0, 10)))
+          this.sistEndret = new Date(Math.max.apply(null, dates)).toISOString().slice(0, 10)
         })
         .catch(e => {
           this.errors.push(e)
