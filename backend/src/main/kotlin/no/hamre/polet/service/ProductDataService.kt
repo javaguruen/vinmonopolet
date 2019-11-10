@@ -84,7 +84,7 @@ class ProductDataServiceImpl(
         return UpdateStat(added = false, priceChanged = false)
       } else {
         log.info("Price changed from ${latestPrice.pris} to ${product.pris} for product ${p.id}")
-        dao.priceChanged(latestPrice.id, product.datotid ?: LocalDateTime.now(), product.pris - latestPrice.pris)
+        dao.priceChanged(latestPrice.id, product.datotid, product.pris - latestPrice.pris)
         dao.insertPrice(product, p.id, product.pris)
         return UpdateStat(added = false, priceChanged = true)
       }

@@ -71,10 +71,7 @@ class H2LiquibaseDataSourceFactory {
 
     override fun getConnection(): Connection {
       val con = super.getConnection()
-      if (schemaName != null) {
-        con.createStatement().execute("SET SCHEMA=" + schemaName)
-      }
-
+      con.createStatement().execute("SET SCHEMA=" + schemaName)
       return con
     }
   }
