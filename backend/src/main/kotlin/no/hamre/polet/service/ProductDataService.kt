@@ -43,6 +43,8 @@ class ProductDataServiceImpl(
     val lines = data.split("\n")
     log.info("${lines.size} lines in file")
     lines.subList(1, lines.size)
+        .asSequence()
+        .also { log.info("Parsing: $it") }
         .map { l -> ProductLineHelper.create(l.split(";")) }
         .filter { p -> p.varetype.toUpperCase() == "WHISKY" }
         .forEach { p ->
