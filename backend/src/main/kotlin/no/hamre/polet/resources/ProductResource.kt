@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 @Api("Product related")
-@Path("/product")
+@Path("/products")
 @Produces(MediaType.APPLICATION_JSON)
 class ProductResource(val service: ProductDataService, val defaultUrl: String) {
   private val log = LoggerFactory.getLogger(this.javaClass)
