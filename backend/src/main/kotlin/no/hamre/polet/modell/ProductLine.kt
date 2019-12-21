@@ -1,14 +1,15 @@
 package no.hamre.polet.modell
 
+import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 
 object ProductLineHelper {
-
+  private val LOG = LoggerFactory.getLogger(ProductLineHelper::class.java)
   private fun toInt(s: String?): Int? {
     return if (s != null && s.isNotEmpty()) s.toInt() else null
   }
 
-  private fun toDouble(s: String): Double{
+  private fun toDouble(s: String): Double {
     return s.replace(",", ".").toDouble()
   }
 
@@ -17,46 +18,51 @@ object ProductLineHelper {
   }
 
   fun create(line: List<String>): Productline {
-    return Productline(
-        id= null,
-        datotid = toLocalDateTime(line[0]),
-        varenummer = line[1],
-        varenavn = line[2],
-        volum = toDouble(line[3]),
-        pris = toDouble(line[4]),
-        literpris = toDouble(line[5]),
-        varetype = line[6],
-        produktutvalg = line[7],
-        butikkategori = line[8],
-        fylde = toInt(line[9])!!,
-        friskhet = toInt(line[10])!!,
-        garvestoffer = toInt(line[11])!!,
-        bitterhet = toInt(line[12])!!,
-        sodme = toInt(line[13])!!,
-        farge = line[14],
-        lukt = line[15],
-        smak = line[16],
-        passertil01 = line[17],
-        passertil02 = line[18],
-        passertil03 = line[19],
-        land = line[20],
-        distrikt = line[21],
-        underdistrikt = line[22],
-        aargang = toInt(line[23]),
-        raastoff = line[24],
-        metode = line[25],
-        alkohol = toDouble(line[26]),
-        sukker = line[27],
-        syre = line[28],
-        lagringsgrad = line[29],
-        produsent = line[30],
-        grossist = line[31],
-        distributor = line[32],
-        emballasjetype = line[33],
-        korktype = line[34],
-        vareurl = line[35].trim(),
-        updated = LocalDateTime.now()
-    )
+    try {
+      return Productline(
+          id = null,
+          datotid = toLocalDateTime(line[0]),
+          varenummer = line[1],
+          varenavn = line[2],
+          volum = toDouble(line[3]),
+          pris = toDouble(line[4]),
+          literpris = toDouble(line[5]),
+          varetype = line[6],
+          produktutvalg = line[7],
+          butikkategori = line[8],
+          fylde = toInt(line[9])!!,
+          friskhet = toInt(line[10])!!,
+          garvestoffer = toInt(line[11])!!,
+          bitterhet = toInt(line[12])!!,
+          sodme = toInt(line[13])!!,
+          farge = line[14],
+          lukt = line[15],
+          smak = line[16],
+          passertil01 = line[17],
+          passertil02 = line[18],
+          passertil03 = line[19],
+          land = line[20],
+          distrikt = line[21],
+          underdistrikt = line[22],
+          aargang = toInt(line[23]),
+          raastoff = line[24],
+          metode = line[25],
+          alkohol = toDouble(line[26]),
+          sukker = line[27],
+          syre = line[28],
+          lagringsgrad = line[29],
+          produsent = line[30],
+          grossist = line[31],
+          distributor = line[32],
+          emballasjetype = line[33],
+          korktype = line[34],
+          vareurl = line[35].trim(),
+          updated = LocalDateTime.now()
+      )
+    } catch (e: Exception) {
+      LOG.error("Error parsing: $line", e)
+      throw e
+    }
   }
 }
 
