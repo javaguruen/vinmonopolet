@@ -5,6 +5,8 @@ import javax.validation.Valid
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.dropwizard.bundles.assets.AssetsBundleConfiguration
 import io.dropwizard.bundles.assets.AssetsConfiguration
+import io.dropwizard.client.HttpClientConfiguration
+import io.dropwizard.client.JerseyClientConfiguration
 
 import io.dropwizard.db.DataSourceFactory
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration
@@ -37,7 +39,13 @@ data class Config  (
     @field:Valid
     @field:Configuration
     @field:JsonProperty("assets")
-    val assets: AssetsConfiguration = AssetsConfiguration.builder().build()
+    val assets: AssetsConfiguration = AssetsConfiguration.builder().build(),
+
+    @field:Valid
+    @field:NotNull
+    @field:JsonProperty("jerseyClient")
+    val jerseyClient: JerseyClientConfiguration = JerseyClientConfiguration()
+
 ) : io.dropwizard.Configuration(), AssetsBundleConfiguration {
   override fun getAssetsConfiguration(): AssetsConfiguration = assets
 }
