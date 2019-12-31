@@ -2,6 +2,7 @@ package no.hamre.polet
 
 import io.dropwizard.Application
 import io.dropwizard.bundles.assets.ConfiguredAssetsBundle
+import io.dropwizard.client.JerseyClientBuilder
 import io.dropwizard.db.DataSourceFactory
 import io.dropwizard.migrations.MigrationsBundle
 import io.dropwizard.setup.Bootstrap
@@ -13,6 +14,7 @@ import no.hamre.polet.dao.PoletDao
 import no.hamre.polet.parser.FileDownloaderImpl
 import no.hamre.polet.resources.ProductResource
 import no.hamre.polet.service.ProductDataServiceImpl
+import no.hamre.polet.vinmonopolet.VinmonopoletClientImpl
 import org.constretto.dropwizard.ConstrettoBundle
 
 
@@ -27,6 +29,14 @@ class App : Application<Config>() {
 
   override fun run(config: Config, environment: Environment){
     ObjectMapperFactory.configure(environment.objectMapper)
+
+    val jerseyClient = JerseyClientBuilder(environment)
+        .using(config.jerseyClient)
+        .build(getName());
+
+    environment.jersey().register(VinmonopoletClientImpl(
+        "https://apis.vinmonopolet.no/products/v0/details-normal?maxResults=100",
+        jerseyClient, ""));
 
     val dataSource = when (config.useH2Database) {
       true -> H2LiquibaseDataSourceFactory.createDataSource("polet")
