@@ -1,0 +1,127 @@
+[{
+  "basic": {
+    "productId": "12001",
+    "productShortName": "Bell's Original",
+    "productLongName": "Bell's Original",
+    "volume": 0.700,
+    "alcoholContent": 40.00,
+    "vintage": 0,
+    "ageLimit": "20",
+    "packagingMaterialId": "03",
+    "packagingMaterial": "Glass",
+    "volumTypeId": "01",
+    "volumType": "Helflaske",
+    "corkTypeId": "",
+    "corkType": "",
+    "bottlePerSalesUnit": 1,
+    "introductionDate": "2014-01-09",
+    "productStatusSaleId": "",
+    "productStatusSaleName": "",
+    "productStatusSaleValidFrom": "0000-00-00"
+  },
+  "logistics": {
+    "wholesalerId": "30086",
+    "wholesalerName": "Diageo Norway AS",
+    "vendorId": "30190",
+    "vendorName": "Skanlog AS",
+    "vendorValidFrom": "2010-09-01",
+    "manufacturerId": "61243",
+    "manufacturerName": "Bell's Dist.",
+    "barcodes": [
+      {
+        "gtin": "5000387905634",
+        "isMainGtin": true
+      },
+      {
+        "gtin": "5000387005211",
+        "isMainGtin": false
+      }
+    ],
+    "orderPack": "D12",
+    "minimumOrderQuantity": 12.000,
+    "packagingWeight": 568.000
+  },
+  "origins": {
+    "origin": {
+      "countryId": "GBS",
+      "country": "Skottland",
+      "regionId": "00",
+      "region": "Øvrige",
+      "subRegionId": "00",
+      "subRegion": "Øvrige"
+    },
+    "production": {
+      "countryId": "",
+      "country": "",
+      "regionId": "",
+      "region": ""
+    },
+    "localQualityClassifId": "",
+    "localQualityClassif": ""
+  },
+  "properties": {
+    "ecoLabellingId": "",
+    "ecoLabelling": "",
+    "storagePotentialId": "",
+    "storagePotential": "",
+    "organic": false,
+    "biodynamic": false,
+    "ethicallyCertified": false,
+    "vintageControlled": false,
+    "sweetWine": false,
+    "freeOrLowOnGluten": false,
+    "kosher": false,
+    "locallyProduced": false,
+    "noAddedSulphur": false,
+    "environmentallySmart": false,
+    "productionMethodStorage": ""
+  },
+  "classification": {
+    "mainProductTypeId": "3",
+    "mainProductTypeName": "Brennevin",
+    "subProductTypeId": "312",
+    "subProductTypeName": "Whisky",
+    "productTypeId": "31201",
+    "productTypeName": "Whisky, annen",
+    "productGroupId": "48",
+    "productGroupName": "Whisky, Skottland, annen"
+  },
+  "ingredients": {
+    "grapes": [],
+    "ingredients": "",
+    "sugar": "< 3",
+    "acid": ""
+  },
+  "description": {
+    "characteristics": {
+      "colour": "Lys gyllen.",
+      "odour": "Aroma med preg av lyst malt, vanilje og litt røyk.",
+      "taste": "Lett og mild whisky med innslag av malt og krydder, streif av vanilje og røyk."
+    },
+    "freshness": "",
+    "fullness": "",
+    "bitterness": "",
+    "sweetness": "",
+    "tannins": "",
+    "recommendedFood": []
+  },
+  "assortment": {
+    "assortmentId": "15",
+    "assortment": "Bestillingsutvalget",
+    "validFrom": "2016-01-01",
+    "listedFrom": "2010-05-03",
+    "assortmentGrade": ""
+  },
+  "prices": [
+    {
+      "priceValidFrom": "2020-01-01",
+      "salesPrice": 339.90,
+      "salesPricePrLiter": 0,
+      "bottleReturnValue": 0
+    }
+  ],
+  "lastChanged": {
+    "date": "2020-01-01",
+    "time": "04:03:34"
+  }
+}]
