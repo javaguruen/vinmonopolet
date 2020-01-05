@@ -92,7 +92,7 @@ class PoletDao(dataSource: DataSource)
         | INNER JOIN t_price pr ON pr.product_id=p.id
         | WHERE
         |	  pr.datotid::date = (
-        |	    SELECT max( prod.datotid::date ) FROM t_product prod
+        |	    SELECT max( pris.datotid::date ) FROM t_price pris
         | 	)
       """.trimMargin()
     var con: Connection? = null
