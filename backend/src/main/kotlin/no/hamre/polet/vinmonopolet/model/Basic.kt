@@ -11,7 +11,9 @@ data class Product(
     val assortment: Assortment,
     val prices: List<Price>,
     val lastChanged: LastChanged
-)
+){
+  fun isWhisky() = "Whisky" == classification.subProductTypeName
+}
 
 data class Basic(
     val productId: String,

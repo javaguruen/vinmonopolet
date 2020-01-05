@@ -15,10 +15,11 @@ class VinmonopoletClientImpl(
 ) {
   private val mapper = ObjectMapperFactory.create()
 
-  fun doRequest(maxResults: Int = 100): List<Product> {
+  fun doRequest(start: Int = 0, maxResults: Int = 400): List<Product> {
     val response: String = jerseyClient.target(url)
         .path("products").path("v0").path("details-normal")
         .queryParam("maxResults", maxResults)
+        .queryParam("start", start)
         .request()
         .header("Ocp-Apim-Subscription-Key", apiKey)
         .get(String::class.java)
