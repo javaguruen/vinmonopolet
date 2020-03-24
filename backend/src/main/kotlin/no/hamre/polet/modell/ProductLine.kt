@@ -17,7 +17,7 @@ object ProductLineHelper {
     return LocalDateTime.parse(s)
   }
 
-  fun create(line: List<String>): Productline {
+  fun create(line: List<String>): Productline? {
     try {
       return Productline(
           id = null,
@@ -61,7 +61,7 @@ object ProductLineHelper {
       )
     } catch (e: Exception) {
       LOG.error("Error parsing: $line", e)
-      throw e
+      return null
     }
   }
 }

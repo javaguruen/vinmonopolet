@@ -13,7 +13,7 @@ class FileParserTest {
   fun `Parse file to lines`() {
     val filename = "produkter.csv"
     val readmeText = File("src/main/resources/$filename").readLines(Charset.forName("windows-1252"))
-    val p = ProductLineHelper.create(readmeText[1].split(";"))
+    val p = ProductLineHelper.create(readmeText[1].split(";"))!!
     val ds = H2LiquibaseDataSourceFactory.createDataSource("polet")
     val dao = PoletDao(ds)
     dao.insertProduct(p)

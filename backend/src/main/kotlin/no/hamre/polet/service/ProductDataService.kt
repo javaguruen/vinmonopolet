@@ -47,6 +47,7 @@ class ProductDataServiceImpl(
         .filterNotNull()
         .filterNot { it.trim().isEmpty() }
         .map { l -> ProductLineHelper.create(l.split(";")) }
+        .filterNotNull()
         .filter { p -> p.varetype.toUpperCase() == "WHISKY" }
         .forEach { p ->
           whiskies += 1

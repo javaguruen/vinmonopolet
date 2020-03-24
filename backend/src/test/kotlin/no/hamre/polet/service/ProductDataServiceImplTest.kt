@@ -23,12 +23,12 @@ object ServiceTestData {
   val line = "2014-10-22T00:56:50;4596101;Ardbeg 10 Years Old;0,70;549,90;785,60;Whisky;Basisutvalget;Butikkategori 5;0;0;0;0;0;;;;;;;Skottland;Islay;Øvrige;;Maltet bygg, gjær, vann;Tradisjonell produksjon, bl.a. dobbeltdestillasjon i pot stills. Min. 10 års fatlagring.;46,00;Ukjent;Ukjent;;Ardbeg Dist.;Moët Hennessy Norge AS;SKANLOG VSD AS;Engangsflasker av glass;;http://www.vinmonopolet.no/vareutvalg/varedetaljer/sku-4596101"
   val idProd: Long = 1
   val idPrice: Long = 100
-  val productLine = ProductLineHelper.create(line.split(";"))
-  val price = Price(idPrice, productLine.datotid, productLine.varenummer,
+  val productLine = ProductLineHelper.create(line.split(";"))!!
+  val price = Price(idPrice, productLine!!.datotid, productLine.varenummer,
       productLine.volum, productLine.pris, productLine.literpris,
       productLine.produktutvalg, productLine.butikkategori, LocalDateTime.now())
   val priceChanged = price.copy(pris = 345.0, updated = price.updated.plus(1, WEEKS))
-  val product = Product(idProd, productLine.datotid, productLine.varenummer, productLine.varenavn,
+  val product = Product(idProd, productLine!!.datotid, productLine!!.varenummer, productLine.varenavn,
       productLine.varetype, productLine.volum,
       productLine.fylde,
       productLine.friskhet, productLine.garvestoffer, productLine.bitterhet,
@@ -54,8 +54,8 @@ class ProductDataServiceImplTest {
   fun `Non existing product should be inserted with price`() {
     val productId = "4596101"
     `when`(dao.findByVarenummer(productId)).thenReturn(null)
-    `when`(dao.insertProduct(ServiceTestData.productLine)).thenReturn(idProd)
-    `when`(dao.insertPrice(productLine, idProd, null)).thenReturn(idPrice)
+    `when`(dao.insertProduct(ServiceTestData.productLine!!)).thenReturn(idProd)
+    `when`(dao.insertPrice(productLine!!, idProd, null)).thenReturn(idPrice)
     service.update(productLine)
 
     verify(dao, times(1)).findByVarenummer(productId)
@@ -67,7 +67,7 @@ class ProductDataServiceImplTest {
   fun `Existing product with no price change should only update timestamp`() {
     val varenummer = "4596101"
     val productWithId = product.copy(id = 1L)
-    val productLineWithId = productLine.copy(id = 1L)
+    val productLineWithId = productLine!!.copy(id = 1L)
     `when`(dao.findByVarenummer(varenummer)).thenReturn(productWithId)
     doNothing().`when`(dao).updateProductTimestamp(idProd)
     `when`(dao.getLatestPrice(idProd)).thenReturn(price)
@@ -88,7 +88,7 @@ class ProductDataServiceImplTest {
     doNothing().`when`(dao).updateProductTimestamp(idProd)
     `when`(dao.getLatestPrice(idProd)).thenReturn(null)
 
-    service.update(productLine)
+    service.update(productLine!!)
 
     verify(dao, times(1)).findByVarenummer(productId)
     verify(dao, times(0)).insertProduct(productLine)
@@ -100,7 +100,7 @@ class ProductDataServiceImplTest {
 
   @Test
   fun `Existing product with changed price should update timestamp and add new price`() {
-    val productLineWithId = productLine.copy(id = idProd)
+    val productLineWithId = productLine!!.copy(id = idProd)
     val productLineWithNewPrice = productLine.copy(pris = 1200.0)
     `when`(dao.findByVarenummer(productLine.varenummer)).thenReturn(product)
     doNothing().`when`(dao).updateProductTimestamp(idProd)
