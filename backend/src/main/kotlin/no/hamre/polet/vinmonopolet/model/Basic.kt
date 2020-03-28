@@ -21,7 +21,7 @@ data class Basic(
     val productLongName: String,
     val volume: Double,
     val alcoholContent: Double,
-    val vintage: Double,
+    val vintage: Double, //should be string?
     val ageLimit: String,
     val packagingMaterialId: String,
     val packagingMaterial: String,
@@ -29,7 +29,7 @@ data class Basic(
     val volumType: String,
     val corkTypeId: String,
     val corkType: String,
-    val bottlePerSalesUnit: Int, //Should be string
+    val bottlePerSalesUnit: Int, //Should be string?
     val introductionDate: String,
     val productStatusSaleId: String,
     val productStatusSaleName: String,
@@ -37,17 +37,19 @@ data class Basic(
 )
 
 data class Logistics(
+    val barcodes: List<Barcode>,
+    val orderPack: String,
+    val minimumOrderQuantity: Double,
+    val packagingWeight: Double,
+
+    //disse finnes ikke i eksempelet men i openapi3.
     val wholesalerId: String,
     val wholesalerName: String,
     val vendorId: String,
     val vendorName: String,
     val vendorValidFrom: String,
     val manufacturerId: String,
-    val manufacturerName: String,
-    val barcodes: List<Barcode>,
-    val orderPack: String,
-    val minimumOrderQuantity: Double,
-    val packagingWeight: Double
+    val manufacturerName: String
 )
 
 data class Barcode(
@@ -144,18 +146,18 @@ data class Food(
 data class Assortment(
     val assortmentId: String,
     val assortment: String,
-    val validFrom: String,
-    val listedFrom: String,
+    val validFrom: String,  //Burde vært dato
+    val listedFrom: String, //Burde vært dato
     val assortmentGrade: String
 )
 
 data class LastChanged(
-    val date: String,
-    val time: String
+    val date: String,  //Burde vært string
+    val time: String   //Burde vært Time
 )
 
 data class Price(
-    val priceValidFrom: String,
+    val priceValidFrom: String,  //should be date
     val salesPrice: Double,
     val salesPricePrLiter: Double,
     val bottleReturnValue: Double

@@ -16,13 +16,13 @@ class TestUtils {
 
   }
 
-  fun String.asResource(work: (URL) -> Unit) {
+  private fun String.asResource(work: (URL) -> Unit) {
     val content = this.javaClass::class.java.getResource(this)
     work(content)
   }
 
   fun fileContent(filename: String): String {
-    val content = javaClass.classLoader.getResource(tmpFileName).readText()
+    val content = javaClass.classLoader.getResource("testdata/$filename").readText()
     return content
   }
 }
