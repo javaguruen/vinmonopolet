@@ -16,6 +16,15 @@ class TestUtils {
 
   }
 
+  fun contentFromFile(filename: String): String {
+    val mapper = ObjectMapperFactory.create()
+    var products = ""
+    tmpFileName.asResource {
+      products = mapper.readValue(it, String::class.java)
+    }
+    return products
+  }
+
   private fun String.asResource(work: (URL) -> Unit) {
     val content = this.javaClass::class.java.getResource(this)
     work(content)

@@ -11,6 +11,8 @@ import no.hamre.polet.service.ServiceTestData.idProd
 import no.hamre.polet.service.ServiceTestData.price
 import no.hamre.polet.service.ServiceTestData.product
 import no.hamre.polet.service.ServiceTestData.productLine
+import no.hamre.polet.vinmonopolet.VinmonopoletClientImpl
+import org.glassfish.jersey.client.JerseyClientBuilder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
@@ -42,7 +44,7 @@ object ServiceTestData {
 }
 
 class ProductDataServiceImplTest {
-  private val service = ProductDataServiceImpl(dao, MockFileDownloader())
+  private val service = ProductDataServiceImpl(dao, MockFileDownloader(), VinmonopoletClientImpl("", JerseyClientBuilder.createClient(), ""))
 
   @BeforeEach
   fun beforeEach(){

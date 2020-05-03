@@ -40,7 +40,7 @@ data class Product(
     val metode: String?,
     val alkohol: Double,
     val sukker: String,
-    val syre: String,
+    val syre: String?,
     val lagringsgrad: String?,
     val produsent: String,
     val grossist: String,

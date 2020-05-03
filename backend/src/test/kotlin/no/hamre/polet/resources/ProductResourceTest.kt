@@ -12,13 +12,16 @@ import no.hamre.polet.modell.Product
 import no.hamre.polet.parser.MockFileDownloader
 import no.hamre.polet.service.DownloadResult
 import no.hamre.polet.service.ProductDataServiceImpl
+import no.hamre.polet.vinmonopolet.VinmonopoletClientImpl
 import org.eclipse.jetty.http.HttpStatus
+import org.glassfish.jersey.client.JerseyClient
+import org.glassfish.jersey.client.JerseyClientBuilder
 
 object ProductResourceTestData {
   val encoding = "windows-1252"
   val url = "produkter-2017-05-20-short.csv"
   val dao = PoletDao(H2LiquibaseDataSourceFactory.createDataSource("polet"))
-  val service = ProductDataServiceImpl(dao, MockFileDownloader())
+  val service = ProductDataServiceImpl(dao, MockFileDownloader(), VinmonopoletClientImpl("", JerseyClientBuilder.createClient(), ""))
   val resource = ProductResource(service, url)
   val ardbeg10Id = 100L
   val ardbeg10Name = "Ardbeg 10 Years Old"

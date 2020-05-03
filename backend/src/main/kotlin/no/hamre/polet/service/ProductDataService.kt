@@ -6,15 +6,18 @@ import no.hamre.polet.modell.ProductLineHelper
 import no.hamre.polet.modell.ProductRelease
 import no.hamre.polet.modell.Productline
 import no.hamre.polet.parser.FileDownloader
+import no.hamre.polet.vinmonopolet.VinmonopoletClient
 import org.slf4j.LoggerFactory
+import java.io.File
 import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlin.random.Random
 
 
 interface ProductDataService {
   fun findLatestReleases(): List<Product>
 
   fun updateFromWeb(url: String): DownloadResult
+  fun updateFromApi(): DownloadResult
 
   fun findProduct(productId: Long): Product?
   fun findAllProduct(): List<Product>
@@ -23,7 +26,8 @@ interface ProductDataService {
 
 class ProductDataServiceImpl(
     private val dao: Dao,
-    private val downloader: FileDownloader) : ProductDataService {
+    private val downloader: FileDownloader,
+    private val apiClient: VinmonopoletClient) : ProductDataService {
 
   private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -71,7 +75,62 @@ class ProductDataServiceImpl(
     return DownloadResult(lines.size - 1, whiskies, success, failure, added, priceChanges, errors)
   }
 
+  override fun updateFromApi(): DownloadResult {
+    var whiskies = 0
+    var success = 0
+    var failure = 0
+    var added = 0
+    var priceChanges = 0
+    val errors = mutableListOf<String>()
+    var totalProducts = -1
+    var start = 0
+    var current = 0
+    var batchSize = 400
+    var continueBatch = true
+    while (continueBatch) {
+      var data = apiClient.doRequest(start, batchSize)
+      log.info("${data.whiskies.size} whiskies found in request")
+      log.info("Metadata: ${data.metaData}")
+      data.whiskies
+          //.asSequence()
+          .forEach { productline ->
+            try {
+              val stat = update(productline)
+              success += 1
+              if (stat.added) {
+                added += 1
+              }
+              if (stat.priceChanged) {
+                priceChanges += 1
+              }
+            } catch (e: Exception) {
+              log.error("Error ${e.message} when parsing: \n$productline")
+              errors.add("${e.message} : <$productline")
+              failure += 1
+            }
+          }
+      log.info("Processed one batch")
+      whiskies += data.whiskies.size
+      totalProducts = data.metaData.totalCount
+      continueBatch = !data.metaData.isDone
+      start = start + batchSize
+    }
+    log.info("Done downloading from API, $whiskies whiskies $failure failed and $success succeeded")
+    return DownloadResult(
+        total = totalProducts,
+        success = success,
+        whiskies = whiskies,
+        failure = failure,
+        added = added,
+        priceChanges = priceChanges,
+        errors = errors)
+  }
+
   data class UpdateStat(val added: Boolean, val priceChanged: Boolean)
+
+  fun updateRandom(product: Productline): UpdateStat{
+    return UpdateStat(Random.nextDouble() < 0.95, Random.nextDouble() < 0.15)
+  }
 
   fun update(product: Productline): UpdateStat {
     val p = dao.findByVarenummer(product.varenummer)
@@ -88,7 +147,7 @@ class ProductDataServiceImpl(
         return UpdateStat(added = false, priceChanged = false)
       } else {
         log.info("Price changed from ${latestPrice.pris} to ${product.pris} for product ${p.id}")
-        dao.priceChanged(latestPrice.id, product.datotid, product.pris - latestPrice.pris)
+        dao.priceChanged(latestPrice.id, product.datotid!!, product.pris - latestPrice.pris)
         dao.insertPrice(product, p.id, product.pris)
         return UpdateStat(added = false, priceChanged = true)
       }

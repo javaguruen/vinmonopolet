@@ -32,6 +32,14 @@ data class Config  (
     val dataUrl: String,
 
     @field:Configuration
+    @field:Valid
+    val apiUrl: String,
+
+    @field:Configuration
+    @field:Valid
+    val apiKey: String,
+
+    @field:Configuration
     val dataEncoding: String,
     @field:JsonProperty("swagger")
     val swaggerBundleConfiguration: SwaggerBundleConfiguration,

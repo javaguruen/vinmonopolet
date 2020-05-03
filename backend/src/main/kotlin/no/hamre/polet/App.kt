@@ -1,5 +1,6 @@
 package no.hamre.polet
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider
 import io.dropwizard.Application
 import io.dropwizard.bundles.assets.ConfiguredAssetsBundle
 import io.dropwizard.client.JerseyClientBuilder
@@ -19,57 +20,70 @@ import org.constretto.dropwizard.ConstrettoBundle
 
 
 class App : Application<Config>() {
-  
+
   companion object {
     @JvmStatic
-    fun main(args: Array<String>){
+    fun main(args: Array<String>) {
       App().run(*args)
     }
   }
 
-  override fun run(config: Config, environment: Environment){
-    ObjectMapperFactory.configure(environment.objectMapper)
+  override fun run(config: Config, environment: Environment) {
+    /*
+    ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+final JacksonJsonProvider jacksonJsonProvider = new JacksonJaxbJsonProvider(mapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+final Client    client  = ClientBuilder.newClient().register(jacksonJsonProvider);
+     */
+
+    val objectMapper = environment.objectMapper
+    ObjectMapperFactory.configure(objectMapper)
+    val jacksonJsonProvider = JacksonJaxbJsonProvider(objectMapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS)
+    val clientConfiguration = config.jerseyClient
     val jerseyClient = JerseyClientBuilder(environment)
-        .using(config.jerseyClient)
-        .build(getName());
+        .using(clientConfiguration)
+        .using(objectMapper)
+        .withProvider(jacksonJsonProvider)
+        .build(name)
 
-    environment.jersey().register(VinmonopoletClientImpl(
-        "https://apis.vinmonopolet.no/products/v0/details-normal?maxResults=100",
-        jerseyClient, ""));
+    val vinmonopoletClientImpl = VinmonopoletClientImpl(config.apiUrl, jerseyClient, config.apiKey)
+    environment.jersey().register(vinmonopoletClientImpl);
 
     val dataSource = when (config.useH2Database) {
       true -> H2LiquibaseDataSourceFactory.createDataSource("polet")
       false -> config.database.build(environment.metrics(), "polet")
     }
 
-    if( config.loadTestdata ){
+    if (config.loadTestdata) {
       TestdataLoader.load(dataSource)
     }
 
     val productDao = PoletDao(dataSource)
-    val productService = ProductDataServiceImpl(productDao, FileDownloaderImpl(config.dataEncoding))
+    val productService = ProductDataServiceImpl(
+        productDao,
+        FileDownloaderImpl(config.dataEncoding),
+        vinmonopoletClientImpl)
     val productResource = ProductResource(productService, config.dataUrl)
 
     environment.jersey().register(productResource)
   }
 
   override fun initialize(bootstrap: Bootstrap<Config>) {
-    ObjectMapperFactory.configure( bootstrap.objectMapper )
-    bootstrap.addBundle( ConstrettoBundle<Config>())
-    bootstrap.addBundle( object : MigrationsBundle<Config>() {
+    ObjectMapperFactory.configure(bootstrap.objectMapper)
+    bootstrap.addBundle(ConstrettoBundle<Config>())
+    bootstrap.addBundle(object : MigrationsBundle<Config>() {
       override
       fun getDataSourceFactory(configuration: Config): DataSourceFactory {
         return configuration.database
       }
     })
 
-    bootstrap.addBundle( object : SwaggerBundle<Config>() {
+    bootstrap.addBundle(object : SwaggerBundle<Config>() {
       override fun getSwaggerBundleConfiguration(t: Config): SwaggerBundleConfiguration {
         return t.swaggerBundleConfiguration
       }
     })
     // Map requests to /dashboard/${1} to be found in the class path at /assets/${1}.
-    bootstrap.addBundle( ConfiguredAssetsBundle("/public/", "/", "index.html"))
+    bootstrap.addBundle(ConfiguredAssetsBundle("/public/", "/", "index.html"))
   }
 }

@@ -1,5 +1,7 @@
 package no.hamre.polet.vinmonopolet.model
 
+import com.fasterxml.jackson.annotation.JsonCreator
+
 data class Product(
     val basic: Basic,
     val logistics: Logistics,
@@ -12,7 +14,7 @@ data class Product(
     val prices: List<Price>,
     val lastChanged: LastChanged
 ){
-  fun isWhisky() = "Whisky" == classification.subProductTypeName
+  fun isWhisky() = "whisky" == classification.subProductTypeName.toLowerCase()
 }
 
 data class Basic(
@@ -21,7 +23,7 @@ data class Basic(
     val productLongName: String,
     val volume: Double,
     val alcoholContent: Double,
-    val vintage: Double, //should be string?
+    val vintage: Int, //should be string?
     val ageLimit: String,
     val packagingMaterialId: String,
     val packagingMaterial: String,

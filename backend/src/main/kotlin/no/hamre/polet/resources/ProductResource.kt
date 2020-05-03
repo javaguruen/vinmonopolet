@@ -29,6 +29,15 @@ class ProductResource(val service: ProductDataService, val defaultUrl: String) {
     return Response.ok(result).build()
   }
 
+  @PUT
+  @Path("/scrape")
+  @Timed
+  fun downloadFromApi(): Response {
+    log.info("PUT /products/scrape")
+    val result = service.updateFromApi()
+    return Response.ok(result).build()
+  }
+
   @GET
   @Timed
   @Path("{id}")
