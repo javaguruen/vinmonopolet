@@ -34,7 +34,7 @@ class VinmonopoletClientImpl(
     val links: List<String> = response.headers.get("link")?.map { it as String } ?: emptyList()
     LOG.info("Status: $status, totalcount: $totalCount, links: $links")
     val productsAsString = response.readEntity(String::class.java)
-    LOG.info(productsAsString)
+    //LOG.info(productsAsString)
     val products = mapper.readValue(productsAsString, Array<Product>::class.java)
     return BatchData(
         MetaData(
