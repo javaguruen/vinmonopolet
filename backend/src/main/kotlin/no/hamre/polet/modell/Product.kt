@@ -53,6 +53,27 @@ data class Product(
     val prices: List<Price> = listOf()
 )
 
+data class LatestProductchange(
+    val id: Long,
+    val datotid: LocalDateTime,
+    val varenummer: String,
+    val varenavn: String,
+    val varetype: String,
+    val volum: Double,
+    val land: String,
+    val distrikt: String?,
+    val underdistrikt: String?,
+    val alkohol: Double,
+    val produsent: String,
+    val vareurl: String,
+    val active: Boolean = true,
+    val updated: LocalDateTime? = LocalDateTime.now(),
+    val price: Price,
+    val priceLiter: Double,
+    val priceChangeKr: Double?,
+    val priceChangePercent: Double?
+)
+
 //2014-10-22T00:56:50;1101;L�iten Linie;0,70;399,90;571,30;
 //Akevitt;Basisutvalget;Butikkategori 3;
 //0;0;0;0;0;;;;;;;Norge;�vrige;�vrige;;Poteter, krydder;16 mnd p� fat;

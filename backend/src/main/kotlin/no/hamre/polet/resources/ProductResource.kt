@@ -3,6 +3,7 @@ package no.hamre.polet.resources
 
 import com.codahale.metrics.annotation.Timed
 import io.swagger.annotations.Api
+import no.hamre.polet.modell.LatestProductchange
 import no.hamre.polet.service.ProductDataService
 import org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404
 import org.slf4j.LoggerFactory
@@ -76,6 +77,26 @@ class ProductResource(val service: ProductDataService, val defaultUrl: String) {
     log.info("GET /products/latest")
     try {
       val releases = service.findLatestReleases()
+          .map { LatestProductchange(
+              it.id,
+              it.datotid,
+              it.varenummer,
+              it.varenavn,
+              it.varetype,
+              it.volum,
+              it.land,
+              it.distrikt,
+              it.underdistrikt,
+              it.alkohol,
+              it.produsent,
+              it.vareurl,
+              it.active,
+              it.updated,
+              it.prices[0],
+              it.prices[0].literpris,
+              if(it.prices.size>1) (it.prices[0].pris - it.prices[1].pris) else 0.0,
+              if(it.prices.size>1) ((it.prices[0].pris - it.prices[1].pris))/(it.prices[1].pris)*100 else 0.0
+          ) }
       return Response.ok(releases).build()
     } catch (e: Exception) {
       log.error("Exception getting latest release", e)
