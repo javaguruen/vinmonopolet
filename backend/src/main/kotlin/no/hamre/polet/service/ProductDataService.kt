@@ -19,7 +19,8 @@ interface ProductDataService {
   fun updateFromWeb(url: String): DownloadResult
   fun updateFromApi(): DownloadResult
 
-  fun findProduct(productId: Long): Product?
+  fun findProductById(productId: Long): Product?
+  fun findProducts(q: String): List<Product>
   fun findAllProduct(): List<Product>
   fun findProductByReleaseDate(): List<ProductRelease>
 }
@@ -159,9 +160,13 @@ class ProductDataServiceImpl(
     }
   }
 
-  override fun findProduct(productId: Long): Product? {
+  override fun findProductById(productId: Long): Product? {
     val product = dao.findById(productId)
     return product?.let { p -> p.copy(prices = dao.findPrices(p.id)) }
+  }
+
+  override fun findProducts(q: String): List<Product> {
+    return dao.query(q)
   }
 
   override fun findProductByReleaseDate(): List<ProductRelease> {

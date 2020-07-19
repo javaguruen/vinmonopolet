@@ -17,6 +17,7 @@ import javax.sql.DataSource
 
 interface Dao {
   fun findAll(): List<Product>
+  fun query(q: String): List<Product>
   fun findLatestReleases(): List<Product>
   fun findByVarenummer(varenummer: String): Product?
   fun findById(id: Long): Product?
@@ -62,6 +63,27 @@ class PoletDao(dataSource: DataSource)
     } catch (e: Exception) {
       con?.rollback(true)
       throw DatabaseException(e.message)
+    }
+  }
+
+  override fun query(q: String): List<Product> {
+    val safeParam = SqlInputCleaner.clean(q)
+    val sql = """
+      SELECT * FROM t_product WHERE lower(varenavn) LIKE '%$safeParam%'
+      UNION
+      SELECT * FROM t_product WHERE lower(produsent) LIKE '%$safeParam%'
+    """.trimIndent().toString()
+    var con: Connection? = null
+    try {
+      con = sql2o.beginTransaction()
+      val products = con.createQuery(sql)
+          .executeAndFetchTable().rows().map { r ->
+            mapToProduct(r)
+          }
+      return products
+    } catch (e: Exception) {
+      con?.rollback(true)
+      throw RuntimeException(e.message, e)
     }
   }
 

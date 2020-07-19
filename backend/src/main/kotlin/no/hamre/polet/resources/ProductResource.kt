@@ -45,7 +45,7 @@ class ProductResource(val service: ProductDataService, val defaultUrl: String) {
   fun findProduct(@PathParam("id") id: Long): Response {
     log.info("GET /products/$id")
     try {
-      return service.findProduct(id)
+      return service.findProductById(id)
           ?.let { p -> Response.ok(p).build() }
           ?: Response.status(NOT_FOUND_404).build()
     } catch (e: Exception) {

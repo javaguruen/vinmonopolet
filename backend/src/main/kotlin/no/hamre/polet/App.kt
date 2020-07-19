@@ -14,6 +14,7 @@ import no.hamre.polet.dao.H2LiquibaseDataSourceFactory
 import no.hamre.polet.dao.PoletDao
 import no.hamre.polet.parser.FileDownloaderImpl
 import no.hamre.polet.resources.ProductResource
+import no.hamre.polet.resources.SearchResource
 import no.hamre.polet.service.ProductDataServiceImpl
 import no.hamre.polet.vinmonopolet.VinmonopoletClientImpl
 import org.constretto.dropwizard.ConstrettoBundle
@@ -64,8 +65,12 @@ final Client    client  = ClientBuilder.newClient().register(jacksonJsonProvider
         FileDownloaderImpl(config.dataEncoding),
         vinmonopoletClientImpl)
     val productResource = ProductResource(productService, config.dataUrl)
+    val searchResource = SearchResource(productService, config.dataUrl)
 
-    environment.jersey().register(productResource)
+    environment.jersey()
+        .register(productResource)
+    environment.jersey()
+        .register(searchResource)
   }
 
   override fun initialize(bootstrap: Bootstrap<Config>) {
