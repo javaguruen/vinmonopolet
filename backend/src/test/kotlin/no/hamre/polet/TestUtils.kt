@@ -1,13 +1,13 @@
 package no.hamre.polet
 
 import no.hamre.polet.vinmonopolet.model.Product
-import java.io.InputStream
+import java.io.FileNotFoundException
 import java.net.URL
 
 class TestUtils {
   val tmpFileName = "\\testdata\\bellsWhisky.json"
 
-  fun fromFile(filename: String): Unit {
+  fun fromFile() {
     val mapper = ObjectMapperFactory.create()
     tmpFileName.asResource {
       val products = mapper.readValue(it, Array<Product>::class.java)
@@ -16,7 +16,7 @@ class TestUtils {
 
   }
 
-  fun contentFromFile(filename: String): String {
+  fun contentFromFile(): String {
     val mapper = ObjectMapperFactory.create()
     var products = ""
     tmpFileName.asResource {
@@ -31,7 +31,7 @@ class TestUtils {
   }
 
   fun fileContent(filename: String): String {
-    val content = javaClass.classLoader.getResource("testdata/$filename").readText()
-    return content
+    return javaClass.classLoader.getResource("testdata/$filename")?.readText()
+        ?: throw FileNotFoundException("testdata/$filename")
   }
 }

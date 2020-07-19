@@ -1,12 +1,10 @@
 package no.hamre.polet.vinmonopolet
 
 import no.hamre.polet.ObjectMapperFactory
-import no.hamre.polet.TestUtils
 import no.hamre.polet.vinmonopolet.model.Product
 import org.apache.commons.lang3.StringUtils
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-import java.io.File
 
 internal class VinmonopoletApiMapperTest {
 
@@ -24,7 +22,7 @@ internal class VinmonopoletApiMapperTest {
         .also { println(it) }
         .map { VinmonopoletApiMapper.map2ProductLine(it) }
         .also { println(it) }
-
+    assert( productlines.size == 1)
   }
 
   private val data = """
