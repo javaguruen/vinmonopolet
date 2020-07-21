@@ -4,7 +4,7 @@
       <b-table striped responsive :items="products" :fields="fields">
   /*             :sort-by.sync="sortBy"
                :sort-desc.sync="sortDesc" :sort-compare-options="{ numeric: true, sensitivity: 'base' } "
-    *
+    */
         <!-- A virtual composite column -->
         <template slot="change" slot-scope="data">
           <font-awesome-icon :icon=findChangeIcon(data.item.priceChangeKr)></font-awesome-icon>
@@ -28,13 +28,13 @@ export default {
     return {
       fields: [
         { key: 'change', label: 'Change' },
-        { key: 'priceChangeKr', label: 'Prisendring(kr)', sortable: true, sortByFormatted: true, formatter: (priceChangeKr, key, item) => (priceChangeKr == undefined) ? 0.00 : priceChangeKr.toFixed(2) },
-        { key: 'priceChangePercent', label: 'Prisendring(%)', sortable: true, sortByFormatted: true, formatter: (priceChangePersent, key, item) => (priceChangePersent == undefined) ? 0.00 : priceChangePersent.toFixed(2) },
+        { key: 'priceChangeKr', label: 'Prisendring(kr)', sortable: true, sortByFormatted: true, formatter: (priceChangeKr, key, item) => (priceChangeKr === undefined) ? 0.00 : priceChangeKr.toFixed(2) },
+        { key: 'priceChangePercent', label: 'Prisendring(%)', sortable: true, sortByFormatted: true, formatter: (priceChangePersent, key, item) => (priceChangePersent === undefined) ? 0.00 : priceChangePersent.toFixed(2) },
         { key: 'varenavn', label: 'Navn', sortable: true },
         { key: 'price.pris', label: 'Pris', sortable: true, sortByFormatted: true, formatter: (p, key, item) => p.toFixed(2) },
         'volum',
         { key: 'price.literpris', label: 'Literpris', sortable: true, formatter: (p, key, item) => p.toFixed(2) },
-        { key: 'produsent', label: 'produsent', sortable: true },
+        { key: 'produsent', label: 'produsent', sortable: true }
       ],
       sistEndret: '',
       products: [],
@@ -47,14 +47,11 @@ export default {
   },
   methods: {
     findChangeIcon: function (priceChangeKr) {
-      if (priceChangeKr == undefined || Math.abs(priceChangeKr - 0.0) < 0.1) {
-        console.log('plus for ' + priceChangeKr)
+      if (priceChangeKr === undefined || Math.abs(priceChangeKr - 0.0) < 0.1) {
         return 'plus'
       } else if (priceChangeKr > 0) {
-        console.log('down for ' + priceChangeKr)
         return 'angle-double-up'
       }
-      console.log('down for ' + priceChangeKr)
       return 'angle-double-down'
     },
     getLatest: function () {
