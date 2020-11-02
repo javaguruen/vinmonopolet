@@ -8,6 +8,7 @@ import no.hamre.polet.modell.Productline
 import no.hamre.polet.parser.FileDownloader
 import no.hamre.polet.vinmonopolet.VinmonopoletClient
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 
@@ -22,7 +23,7 @@ interface ProductDataService {
   fun findAllProduct(): List<Product>
   fun findProductByReleaseDate(): List<ProductRelease>
 }
-
+@Service
 class ProductDataServiceImpl(
     private val dao: Dao,
     private val downloader: FileDownloader,

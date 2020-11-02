@@ -28,8 +28,8 @@ export default {
     return {
       fields: [
         { key: 'change', label: 'Change' },
-        { key: 'priceChangeKr', label: 'Prisendring(kr)', sortable: true, sortByFormatted: true, formatter: (priceChangeKr, key, item) => (priceChangeKr === undefined) ? 0.00 : priceChangeKr.toFixed(2) },
-        { key: 'priceChangePercent', label: 'Prisendring(%)', sortable: true, sortByFormatted: true, formatter: (priceChangePersent, key, item) => (priceChangePersent === undefined) ? 0.00 : priceChangePersent.toFixed(2) },
+        { key: 'priceChangeKr', label: 'Prisendring(kr)', sortable: true, sortByFormatted: true, formatter: (p, key, item) => (p == null) ? '---' : p.toFixed(2) },
+        { key: 'priceChangePercent', label: 'Prisendring(%)', sortable: true, sortByFormatted: true, formatter: (p, key, item) => (p == null) ? '---' : p.toFixed(2) },
         { key: 'varenavn', label: 'Navn', sortable: true },
         { key: 'price.pris', label: 'Pris', sortable: true, sortByFormatted: true, formatter: (p, key, item) => p.toFixed(2) },
         'volum',

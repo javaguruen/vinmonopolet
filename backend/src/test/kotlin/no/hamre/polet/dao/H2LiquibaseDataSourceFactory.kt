@@ -1,4 +1,5 @@
 package no.hamre.polet.dao
+/*
 
 import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
@@ -14,8 +15,10 @@ import javax.sql.DataSource
 
 import org.h2.jdbcx.JdbcDataSource
 import java.util.concurrent.atomic.AtomicInteger
+*/
 
 class H2LiquibaseDataSourceFactory {
+/*
 
   companion object {
     val DB_NUMBER = AtomicInteger(0)
@@ -75,6 +78,7 @@ class H2LiquibaseDataSourceFactory {
       return con
     }
   }
+*/
 }
 
 

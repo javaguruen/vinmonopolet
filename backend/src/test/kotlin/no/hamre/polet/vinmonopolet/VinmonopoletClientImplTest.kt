@@ -3,7 +3,6 @@ package no.hamre.polet.vinmonopolet
 import no.hamre.polet.ObjectMapperFactory
 import no.hamre.polet.TestUtils
 import no.hamre.polet.vinmonopolet.model.Product
-import org.glassfish.jersey.client.JerseyClientBuilder
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -17,10 +16,9 @@ class VinmonopoletClientImplTest {
   internal fun `call vinmonopolet api`() {
     val client = VinmonopoletClientImpl(
         url = "https://apis.vinmonopolet.no",
-        apiKey = "",
-        jerseyClient = JerseyClientBuilder().build())
+        apiKey = "")
     val max = 100
-    val start = 110
+    val start = 0
     log.info("Calling API. start: $start, max: $max")
     val products: BatchData = client.doRequest(start = start, maxResults = max)
     val foundWhisky = products.whiskies.count { "whisky" == it.varetype.toLowerCase() }

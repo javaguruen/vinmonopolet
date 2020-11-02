@@ -1,5 +1,6 @@
 package no.hamre.polet.parser
 
+import no.hamre.polet.dao.FlywayDataSourceFactory
 import no.hamre.polet.dao.H2LiquibaseDataSourceFactory
 import no.hamre.polet.dao.PoletDao
 import no.hamre.polet.modell.ProductLineHelper
@@ -14,7 +15,7 @@ class FileParserTest {
     val filename = "produkter.csv"
     val readmeText = File("src/main/resources/$filename").readLines(Charset.forName("windows-1252"))
     val p = ProductLineHelper.create(readmeText[1].split(";"))!!
-    val ds = H2LiquibaseDataSourceFactory.createDataSource("polet")
+    val ds = FlywayDataSourceFactory.create() //H2LiquibaseDataSourceFactory.createDataSource("polet")
     val dao = PoletDao(ds)
     dao.insertProduct(p)
   }

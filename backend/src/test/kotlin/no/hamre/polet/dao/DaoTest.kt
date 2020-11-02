@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 class DaoTest {
-  val dao: PoletDao = PoletDao(H2LiquibaseDataSourceFactory.createDataSource("polet"))
+  val dao: PoletDao = PoletDao(FlywayDataSourceFactory.create()) //PoletDao(H2LiquibaseDataSourceFactory.createDataSource("polet"))
 
   @Test
   fun `Insert new product`() {

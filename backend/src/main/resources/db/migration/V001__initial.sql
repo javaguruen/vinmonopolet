@@ -1,12 +1,5 @@
---liquibase formatted sql
-
---changeset javaguruen:1 dbms:all
-
 CREATE SEQUENCE product_id_seq start with 100 increment by 1;
 
---rollback DROP SEQUENCE product_id_seq;
-
--- TABLE product
 CREATE TABLE t_product (
   id                INT NOT NULL DEFAULT NEXTVAL('product_id_seq') PRIMARY KEY,
   datotid           TIMESTAMP,
@@ -46,14 +39,8 @@ CREATE TABLE t_product (
     CONSTRAINT uq_product_varenummer unique (varenummer)
 );
 
---rollback DROP TABLE product;
-
 CREATE SEQUENCE price_id_seq start with 100 increment by 1;
 
---rollback DROP SEQUENCE price_id_seq;
-
-
--- TABLE price
 CREATE TABLE t_price (
   id                INT NOT NULL DEFAULT NEXTVAL('price_id_seq') PRIMARY KEY,
   product_id        INT NOT NULL,
@@ -70,8 +57,6 @@ CREATE TABLE t_price (
       REFERENCES t_product (id)
 );
 
---rollback DROP TABLE price;
-
---changeset javaguruen:2 dbms:all
 ALTER TABLE t_price ADD active_to DATE;
+
 ALTER TABLE t_price ADD price_change DECIMAL(10,2);

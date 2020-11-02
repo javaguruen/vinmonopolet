@@ -2,6 +2,7 @@ package no.hamre.polet.dao
 
 import no.hamre.polet.modell.*
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Repository
 import org.sql2o.Connection
 import org.sql2o.ResultSetHandler
 import org.sql2o.Sql2o
@@ -37,7 +38,7 @@ interface Dao {
   fun findReleasesByDate(releaseDate: LocalDate): List<MiniProduct>
 }
 
-
+@Repository
 class PoletDao(dataSource: DataSource)
   : Dao, PriceResultSetHandler {
   private val sql2o = Sql2o(dataSource, PostgresQuirks())
