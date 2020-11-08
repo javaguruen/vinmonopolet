@@ -13,6 +13,6 @@ logging:
 vinmonopolet:
   encoding: windows-1252
   url: https://apis.vinmonopolet.no
-  apiKey: "f01fecb0f4f648e4964f4dcac017ca6c"
+  apiKey: ""
 server:
   port: 8000
