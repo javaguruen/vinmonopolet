@@ -23,8 +23,7 @@ class SearchResource(val service: ProductDataService, @Value("\${vinmonopolet.ur
   private val log = LoggerFactory.getLogger(this.javaClass)
 
   @RequestMapping(
-      path = ["/"],
-      method = [RequestMethod.PUT],
+      method = [RequestMethod.GET],
       produces = [MediaType.APPLICATION_JSON_VALUE])
   @ApiResponses(value = [
     ApiResponse(responseCode = "200", description = "Successfully persisted.",
