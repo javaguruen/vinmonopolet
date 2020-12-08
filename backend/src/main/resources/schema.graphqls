@@ -1,0 +1,10 @@
+type Query {
+    produkterByName(name: String): [Produkt]
+}
+
+type Produkt {
+    id: ID!
+    varenummer: String!
+    varenavn: String!
+    volum: Float!
+}
