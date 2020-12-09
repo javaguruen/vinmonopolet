@@ -1,5 +1,6 @@
 package no.hamre.polet.graphql
 
+import no.hamre.polet.modell.Price
 import no.hamre.polet.modell.Product
 import java.time.LocalDateTime
 
@@ -27,7 +28,17 @@ object GraphQLData {
         emballasjetype = "Glass",
         grossist = "Grosist",
         sukker = "",
-        prices = emptyList()
+        prices = listOf(Price(
+            id = 100,
+            datotid = LocalDateTime.now(),
+            varenummer = "121212",
+            volum = 0.7,
+            pris = 700.0,
+            literpris = 1000.0,
+            produktutvalg = "Standardutvalget",
+            butikkategori = "Alle butikker",
+            updated = LocalDateTime.now()
+        ))
     )
     )
 }

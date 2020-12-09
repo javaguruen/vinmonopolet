@@ -19,6 +19,7 @@ import graphql.schema.DataFetchingEnvironment
 import java.lang.Exception
 import graphql.com.google.common.collect.ImmutableMap
 import no.hamre.polet.modell.Product
+import no.hamre.polet.service.ProductDataService
 import org.springframework.context.annotation.Configuration
 import java.awt.print.Book
 
@@ -27,7 +28,10 @@ import java.util.function.Predicate
 
 
 @Configuration
-class GraphQLProvider(private val graphQLDataFetchers: GraphQLDataFetchers) {
+class GraphQLProvider(
+    private val graphQLDataFetchers: GraphQLDataFetchers,
+    private val service: ProductDataService) {
+
     private var graphQL: GraphQL? = null
 
     @Bean

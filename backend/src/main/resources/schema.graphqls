@@ -3,8 +3,52 @@ type Query {
 }
 
 type Produkt {
-    id: ID!
-    varenummer: String!
-    varenavn: String!
-    volum: Float!
+    id: ID!,
+    datotid: String!,
+    varenummer: String!,
+    varenavn: String!,
+    varetype: String!,
+    volum: Float!,
+    fylde: Int!,
+    friskhet: Int!,
+    garvestoffer: Int!,
+    bitterhet: Int!,
+    sodme: Int!,
+    farge: String,
+    lukt: String,
+    smak: String,
+    passertil01: String,
+    passertil02: String,
+    passertil03: String,
+    land: String!,
+    distrikt: String,
+    underdistrikt: String,
+    aargang: Int,
+    raastoff: String,
+    metode: String,
+    alkohol:Float!,
+    sukker: String!,
+    syre: String,
+    lagringsgrad: String,
+    produsent: String!,
+    grossist: String!,
+    distributor: String!,
+    emballasjetype: String!,
+    korktype: String,
+    vareurl: String!,
+    active: Boolean!,
+    updated: String,
+    prices: [Price]!
+}
+
+type Price{
+    id: ID!,
+    datotid: String!,
+    varenummer: String!,
+    volum: Float!,
+    pris: Float!,
+    literpris: Float!,
+    produktutvalg: String!,
+    butikkategori: String!,
+    updated: String!
 }
