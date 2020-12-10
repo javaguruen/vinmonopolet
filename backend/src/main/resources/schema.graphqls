@@ -1,10 +1,14 @@
 type Query {
+    "Search for whiskies. Will search in whisky name and destillery"
     produkterByName(name: String): [Produkt]
 }
-
+"""
+What vinmonopolet.no calls a Product, in this case a whisky
+"""
 type Produkt {
     id: ID!,
     datotid: String!,
+    "Identificator for a product in vinmonopolet.no"
     varenummer: String!,
     varenavn: String!,
     varetype: String!,
@@ -30,6 +34,7 @@ type Produkt {
     sukker: String!,
     syre: String,
     lagringsgrad: String,
+    "Destillery"
     produsent: String!,
     grossist: String!,
     distributor: String!,
