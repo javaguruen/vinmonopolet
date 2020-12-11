@@ -1,17 +1,7 @@
 package no.hamre.polet.resources
 
-import no.hamre.polet.dao.H2LiquibaseDataSourceFactory
 import no.hamre.polet.dao.PoletDao
-import no.hamre.polet.resources.ProductResourceTestData.ardbeg10Id
-import no.hamre.polet.resources.ProductResourceTestData.ardbeg10Name
-import no.hamre.polet.resources.ProductResourceTestData.url
 import org.junit.jupiter.api.Test
-
-import no.hamre.polet.modell.Product
-import no.hamre.polet.parser.MockFileDownloader
-import no.hamre.polet.service.DownloadResult
-import no.hamre.polet.service.ProductDataServiceImpl
-import no.hamre.polet.vinmonopolet.VinmonopoletClientImpl
 
 object ProductResourceTestData {
   val encoding = "windows-1252"

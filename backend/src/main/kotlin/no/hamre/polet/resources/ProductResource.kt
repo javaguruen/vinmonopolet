@@ -22,20 +22,6 @@ class ProductResource(val service: ProductDataService, @Value("defaultUrl") val 
   private val log = LoggerFactory.getLogger(this.javaClass)
 
   @RequestMapping(
-      path = ["/download"],
-      method = [RequestMethod.PUT],
-      produces = [MediaType.APPLICATION_JSON_VALUE])
-  @ApiResponses(value = [
-    ApiResponse(responseCode = "201", description = "Successfully persisted.",
-        content = [Content(schema = Schema(implementation = Long::class))])
-  ])
-  fun download(@RequestParam(name = "url", required = true) url: String): ResponseEntity<DownloadResult> {
-    log.info("PUT /products/download?url=$url")
-    val result = service.updateFromWeb(url)
-    return ResponseEntity.ok(result)
-  }
-
-  @RequestMapping(
       path = ["/scrape"],
       method = [RequestMethod.PUT],
       produces = [MediaType.APPLICATION_JSON_VALUE])

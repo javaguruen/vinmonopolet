@@ -4,7 +4,6 @@ import no.hamre.polet.dao.Dao
 import no.hamre.polet.modell.Price
 import no.hamre.polet.modell.Product
 import no.hamre.polet.modell.ProductLineHelper
-import no.hamre.polet.parser.MockFileDownloader
 import no.hamre.polet.service.ServiceTestData.dao
 import no.hamre.polet.service.ServiceTestData.idPrice
 import no.hamre.polet.service.ServiceTestData.idProd
@@ -14,7 +13,6 @@ import no.hamre.polet.service.ServiceTestData.productLine
 import no.hamre.polet.vinmonopolet.VinmonopoletClientImpl
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import java.time.LocalDateTime
 
@@ -43,7 +41,7 @@ object ServiceTestData {
 }
 
 class ProductDataServiceImplTest {
-  private val service = ProductDataServiceImpl(dao, MockFileDownloader(), VinmonopoletClientImpl("", ""))
+  private val service = ProductDataServiceImpl(dao, VinmonopoletClientImpl("", ""))
 
   @BeforeEach
   fun beforeEach(){
@@ -114,19 +112,6 @@ class ProductDataServiceImplTest {
     verify(dao, times(1)).priceChanged(price.id, productLineWithNewPrice.datotid, productLineWithNewPrice.pris - price.pris)
     verify(dao, times(1)).getLatestPrice(idProd)
     verify(dao, times(1)).insertPrice(productLineWithNewPrice, productLineWithId.id!!, productLineWithNewPrice.pris)
-  }
-
-  @Test
-  fun `Other products than whisky are filtered out`() {
-    `when`(dao.findByVarenummer(anyString())).thenReturn(product)
-    doNothing().`when`(dao).updateProductTimestamp(idProd)
-    `when`(dao.getLatestPrice(idProd)).thenReturn(price)
-
-    val result = service.updateFromWeb("/produkter-2017-05-20-short.csv")
-    assert(result.errors.isEmpty())
-    assert(result.total == 10)
-    assert(result.whiskies == 1)
-    assert(result.success == 1)
   }
 
 }

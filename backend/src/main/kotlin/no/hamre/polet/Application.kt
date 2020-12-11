@@ -1,8 +1,10 @@
 package no.hamre.polet
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 
 
@@ -15,9 +17,12 @@ fun main(args: Array<String>) {
 }
 
 @Configuration
-class Config {
-
-}
+@EnableAutoConfiguration
+@ConfigurationProperties(prefix = "vinmonopolet")
+data class Config(
+  @Value("\${vinmonopolet.url}") val url: String,
+  @Value("\${vinmonopolet.apiKey}") val apiKey: String
+)
 
 /*
     val dataSource = when (config.useH2Database) {

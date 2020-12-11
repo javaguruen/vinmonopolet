@@ -2,10 +2,8 @@ package no.hamre.polet.service
 
 import no.hamre.polet.dao.Dao
 import no.hamre.polet.modell.Product
-import no.hamre.polet.modell.ProductLineHelper
 import no.hamre.polet.modell.ProductRelease
 import no.hamre.polet.modell.Productline
-import no.hamre.polet.parser.FileDownloader
 import no.hamre.polet.vinmonopolet.VinmonopoletClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -15,7 +13,6 @@ import java.time.LocalDate
 interface ProductDataService {
   fun findLatestReleases(): List<Product>
 
-  fun updateFromWeb(url: String): DownloadResult
   fun updateFromApi(): DownloadResult
 
   fun findProductById(productId: Long): Product?
@@ -26,7 +23,6 @@ interface ProductDataService {
 @Service
 class ProductDataServiceImpl(
     private val dao: Dao,
-    private val downloader: FileDownloader,
     private val apiClient: VinmonopoletClient) : ProductDataService {
 
   private val log = LoggerFactory.getLogger(this.javaClass)
@@ -34,45 +30,6 @@ class ProductDataServiceImpl(
   override fun findLatestReleases(): List<Product> {
     val products: List<Product> = dao.findLatestReleases()
     return products.map { p -> p.copy(prices = dao.findPrices(p.id)) }
-  }
-
-  override fun updateFromWeb(url: String): DownloadResult {
-    val data = downloader.download(url)
-    var whiskies = 0
-    var success = 0
-    var failure = 0
-    var added = 0
-    var priceChanges = 0
-    val errors = mutableListOf<String>()
-    val lines = data.split("\n")
-    log.info("${lines.size} lines in file")
-    lines.subList(1, lines.size)
-        .asSequence()
-        .filterNotNull()
-        .filterNot { it.trim().isEmpty() }
-        .map { l -> ProductLineHelper.create(l.split(";")) }
-        .filterNotNull()
-        .filter { p -> p.varetype.toUpperCase() == "WHISKY" }
-        .forEach { p ->
-          whiskies += 1
-          try {
-            val stat = update(p)
-            success += 1
-            if (stat.added) {
-              added += 1
-            }
-            if (stat.priceChanged) {
-              priceChanges += 1
-            }
-            //if( processed > 5) throw StopException("Stopping")
-          } catch (e: Exception) {
-            log.error("Error ${e.message} when parsing: \n$p")
-            errors.add("${e.message} : <$p>")
-            failure += 1
-          }
-        }
-    log.info("Done downloading and parsing file. ${lines.size} lines read, $whiskies whiskies $failure failed and $success succeeded")
-    return DownloadResult(lines.size - 1, whiskies, success, failure, added, priceChanges, errors)
   }
 
   override fun updateFromApi(): DownloadResult {
