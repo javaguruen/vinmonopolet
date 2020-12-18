@@ -1,6 +1,7 @@
 type Query {
     "Search for whiskies. Will search in whisky name and destillery"
     produkterByName(name: String): [Produkt]
+    latestRelease: [Produkt]
 }
 """
 What vinmonopolet.no calls a Product, in this case a whisky

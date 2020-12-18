@@ -50,6 +50,7 @@ class GraphQLProvider(
       .type(
         newTypeWiring("Query")
           .dataFetcher("produkterByName", graphQLDataFetchers.produkterByName())
+          .dataFetcher("latestRelease", graphQLDataFetchers.produkterFromLatestRelease())
       )
       .type(
         newTypeWiring("Produkt")

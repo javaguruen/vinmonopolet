@@ -19,6 +19,13 @@ class GraphQLDataFetchers(private val dao: Dao) {
     }
   }
 
+  fun produkterFromLatestRelease(): DataFetcher<*> {
+    return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
+      LOG.info("Find whiskies from latest release ")
+      dao.findLatestReleases()
+    }
+  }
+
   fun pricesForProduct(): DataFetcher<*> {
     return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
       val whisky: Product = dataFetchingEnvironment.getSource()
