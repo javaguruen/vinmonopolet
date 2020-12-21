@@ -10,7 +10,6 @@ import graphql.schema.idl.SchemaGenerator
 import graphql.schema.idl.RuntimeWiring
 
 import graphql.schema.idl.SchemaParser
-import graphql.schema.idl.TypeRuntimeWiring
 
 import graphql.schema.idl.TypeRuntimeWiring.newTypeWiring
 import no.hamre.polet.service.ProductDataService
@@ -49,12 +48,14 @@ class GraphQLProvider(
     return RuntimeWiring.newRuntimeWiring()
       .type(
         newTypeWiring("Query")
-          .dataFetcher("produkterByName", graphQLDataFetchers.produkterByName())
-          .dataFetcher("latestRelease", graphQLDataFetchers.produkterFromLatestRelease())
+          .dataFetcher("soek", graphQLDataFetchers.soek())
+          .dataFetcher("sisteSlipp", graphQLDataFetchers.sisteSlipp())
       )
       .type(
-        newTypeWiring("Produkt")
-        .dataFetcher("prices", graphQLDataFetchers.pricesForProduct()))
+        newTypeWiring("Whisky")
+          .dataFetcher("aktiv", graphQLDataFetchers.whiskyAktiv())
+          .dataFetcher("priser", graphQLDataFetchers.pricesForProduct())
+      )
 /*
             .type(newTypeWiring("Book")
                 .dataFetcher("author", graphQLDataFetchers.getAuthorDataFetcher()))

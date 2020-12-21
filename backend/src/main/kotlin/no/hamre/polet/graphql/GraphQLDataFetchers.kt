@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 @Component
 class GraphQLDataFetchers(private val dao: Dao) {
 
-  fun produkterByName(): DataFetcher<*> {
+  fun soek(): DataFetcher<*> {
     return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
       val name = dataFetchingEnvironment.getArgument<String>("name")
       LOG.info("Find whisky by name = {}", name)
@@ -19,7 +19,7 @@ class GraphQLDataFetchers(private val dao: Dao) {
     }
   }
 
-  fun produkterFromLatestRelease(): DataFetcher<*> {
+  fun sisteSlipp(): DataFetcher<*> {
     return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
       LOG.info("Find whiskies from latest release ")
       dao.findLatestReleases()
@@ -31,6 +31,13 @@ class GraphQLDataFetchers(private val dao: Dao) {
       val whisky: Product = dataFetchingEnvironment.getSource()
       val productId = whisky.id
       dao.findPrices(productId = productId)
+    }
+  }
+
+  fun whiskyAktiv(): DataFetcher<*> {
+    return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
+      val whisky: Product = dataFetchingEnvironment.getSource()
+      whisky.active
     }
   }
 

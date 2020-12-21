@@ -1,12 +1,12 @@
 type Query {
-    "Search for whiskies. Will search in whisky name and destillery"
-    produkterByName(name: String): [Produkt]
-    latestRelease: [Produkt]
+    "Søk etter whisky. Kan søke på navn og produsent"
+    soek(name: String): [Whisky]
+    sisteSlipp: [Whisky]
 }
 """
 What vinmonopolet.no calls a Product, in this case a whisky
 """
-type Produkt {
+type Whisky {
     id: ID!,
     datotid: String!,
     "Identificator for a product in vinmonopolet.no"
@@ -42,12 +42,12 @@ type Produkt {
     emballasjetype: String!,
     korktype: String,
     vareurl: String!,
-    active: Boolean!,
+    aktiv: Boolean!,
     updated: String,
-    prices: [Price]!
+    priser: [Pris]!
 }
 
-type Price{
+type Pris{
     id: ID!,
     datotid: String!,
     varenummer: String!,
