@@ -14,7 +14,7 @@ library.add(faUserSecret, faPlus, faAngleDoubleUp, faAngleDoubleDown)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false
-
+Vue.config.devtools = true
 Vue.use(BootstrapVue)
 
 new Vue({

@@ -66,7 +66,7 @@ export default {
     },
     searchByParam (param) {
       // console.log('Query: ' + param)
-      axios.get('/api/v1/search', { params: { q: param} })
+      axios.get('/api/v1/search', { params: { q: param } })
         .then(response => {
           // JSON responses are automatically parsed.
           this.whiskies = response.data
