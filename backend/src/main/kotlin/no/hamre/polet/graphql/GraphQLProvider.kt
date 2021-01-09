@@ -18,9 +18,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class GraphQLProvider(
-  private val graphQLDataFetchers: GraphQLDataFetchers,
-  private val service: ProductDataService
-) {
+  private val graphQLDataFetchers: GraphQLDataFetchers) {
 
   private var graphQL: GraphQL? = null
 
@@ -56,10 +54,6 @@ class GraphQLProvider(
           .dataFetcher("aktiv", graphQLDataFetchers.whiskyAktiv())
           .dataFetcher("priser", graphQLDataFetchers.pricesForProduct())
       )
-/*
-            .type(newTypeWiring("Book")
-                .dataFetcher("author", graphQLDataFetchers.getAuthorDataFetcher()))
-*/
       .build()
   }
 }

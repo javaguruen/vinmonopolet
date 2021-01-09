@@ -4,7 +4,6 @@ import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
 import no.hamre.polet.dao.Dao
 import no.hamre.polet.modell.Product
-import no.hamre.polet.service.ProductDataService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
