@@ -3,8 +3,7 @@ package no.hamre.polet.graphql
 import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
 import no.hamre.polet.dao.Dao
-import no.hamre.polet.modell.Product
-import no.hamre.polet.service.ProductDataService
+import no.hamre.polet.modell.Whisky
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -28,7 +27,7 @@ class GraphQLDataFetchers(private val dao: Dao) {
 
   fun pricesForProduct(): DataFetcher<*> {
     return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
-      val whisky: Product = dataFetchingEnvironment.getSource()
+      val whisky: Whisky = dataFetchingEnvironment.getSource()
       val productId = whisky.id
       dao.findPrices(productId = productId)
     }

@@ -1,7 +1,6 @@
 package no.hamre.polet.parser
 
 import no.hamre.polet.dao.FlywayDataSourceFactory
-import no.hamre.polet.dao.H2LiquibaseDataSourceFactory
 import no.hamre.polet.dao.PoletDao
 import no.hamre.polet.modell.ProductLineHelper
 import org.junit.jupiter.api.Test
@@ -17,6 +16,6 @@ class FileParserTest {
     val p = ProductLineHelper.create(readmeText[1].split(";"))!!
     val ds = FlywayDataSourceFactory.create() //H2LiquibaseDataSourceFactory.createDataSource("polet")
     val dao = PoletDao(ds)
-    dao.insertProduct(p)
+    dao.insertWhisky(p)
   }
 }

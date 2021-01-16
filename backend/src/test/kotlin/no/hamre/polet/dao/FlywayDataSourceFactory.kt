@@ -10,7 +10,7 @@ object FlywayDataSourceFactory {
 
   fun create(): DataSource {
     val configuration = Flyway.configure()
-        .dataSource("jdbc:h2:mem:polet${DB_NUMBER.incrementAndGet()};DB_CLOSE_DELAY=-1", "polet", "polet")
+        .dataSource("jdbc:h2:mem:polet${DB_NUMBER.incrementAndGet()};MODE=PostgreSQL;DB_CLOSE_DELAY=-1", "polet", "polet")
     val flyway = configuration // (url, user, password)
         .load() // Returns a `Flyway` object.
 

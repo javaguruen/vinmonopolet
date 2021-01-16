@@ -1,7 +1,7 @@
 package no.hamre.polet.service
 
 import no.hamre.polet.dao.Dao
-import no.hamre.polet.modell.Product
+import no.hamre.polet.modell.Whisky
 import no.hamre.polet.modell.ProductRelease
 import no.hamre.polet.modell.Productline
 import no.hamre.polet.vinmonopolet.VinmonopoletClient
@@ -11,13 +11,13 @@ import java.time.LocalDate
 
 
 interface ProductDataService {
-  fun findLatestReleases(): List<Product>
+  fun findLatestReleases(): List<Whisky>
 
   fun updateFromApi(): DownloadResult
 
-  fun findProductById(productId: Long): Product?
-  fun findProducts(q: String): List<Product>
-  fun findAllProduct(): List<Product>
+  fun findProductById(productId: Long): Whisky?
+  fun findProducts(q: String): List<Whisky>
+  fun findAllProduct(): List<Whisky>
   fun findProductByReleaseDate(): List<ProductRelease>
 }
 @Service
@@ -27,8 +27,8 @@ class ProductDataServiceImpl(
 
   private val log = LoggerFactory.getLogger(this.javaClass)
 
-  override fun findLatestReleases(): List<Product> {
-    val products: List<Product> = dao.findLatestReleases()
+  override fun findLatestReleases(): List<Whisky> {
+    val products: List<Whisky> = dao.findLatestReleases()
     return products.map { p -> p.copy(prices = dao.findPrices(p.id)) }
   }
 
@@ -89,10 +89,10 @@ class ProductDataServiceImpl(
     if (p != null) {
       log.info("Found varenummer ${p.varenummer} with id ${p.id}")
       dao.updateProductTimestamp(p.id)
-      val latestPrice = dao.getLatestPrice(p.id)
+      val latestPrice = dao.getLatestPris(p.id)
       log.info("Latest price=$latestPrice")
       if (latestPrice == null) {
-        dao.insertPrice(product, p.id, null)
+        dao.insertPris(product, p.id, null)
         return UpdateStat(added = false, priceChanged = true)
       } else if (latestPrice.pris == product.pris) {
         log.info("Price unchanged for product ${p.id}")
@@ -100,23 +100,23 @@ class ProductDataServiceImpl(
       } else {
         log.info("Price changed from ${latestPrice.pris} to ${product.pris} for product ${p.id}")
         dao.priceChanged(latestPrice.id, product.datotid, product.pris - latestPrice.pris)
-        dao.insertPrice(product, p.id, product.pris)
+        dao.insertPris(product, p.id, product.pris)
         return UpdateStat(added = false, priceChanged = true)
       }
     } else { //p == null
-      val productId = dao.insertProduct(product)
+      val productId = dao.insertWhisky(product)
       log.info("New product inserted. Varenummer ${product.varenummer} got id: $productId")
-      dao.insertPrice(product, productId, null)
+      dao.insertPris(product, productId, null)
       return UpdateStat(added = true, priceChanged = true)
     }
   }
 
-  override fun findProductById(productId: Long): Product? {
+  override fun findProductById(productId: Long): Whisky? {
     val product = dao.findById(productId)
     return product?.let { p -> p.copy(prices = dao.findPrices(p.id)) }
   }
 
-  override fun findProducts(q: String): List<Product> {
+  override fun findProducts(q: String): List<Whisky> {
     return dao.query(q)
   }
 
@@ -127,7 +127,7 @@ class ProductDataServiceImpl(
         releaseDates.subList(1, releaseDates.size).map { date -> ProductRelease(date, listOf(), listOf()) }
   }
 
-  override fun findAllProduct(): List<Product> {
+  override fun findAllProduct(): List<Whisky> {
     return dao.findAll().map { p -> p.copy(prices = dao.findPrices(p.id)) }
   }
 }

@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import no.hamre.polet.modell.LatestProductchange
-import no.hamre.polet.modell.Product
+import no.hamre.polet.modell.Whisky
 import no.hamre.polet.modell.ProductRelease
 import no.hamre.polet.service.DownloadResult
 import no.hamre.polet.service.ProductDataService
@@ -43,7 +43,7 @@ class ProductResource(val service: ProductDataService, @Value("defaultUrl") val 
     ApiResponse(responseCode = "200", description = "Successfully persisted.",
         content = [Content(schema = Schema(implementation = Long::class))])
   ])
-  fun findProduct(@PathVariable(name = "id", required = true) id: Long): ResponseEntity<Product> {
+  fun findProduct(@PathVariable(name = "id", required = true) id: Long): ResponseEntity<Whisky> {
     log.info("GET /products/$id")
     try {
       return service.findProductById(id)
@@ -62,7 +62,7 @@ class ProductResource(val service: ProductDataService, @Value("defaultUrl") val 
     ApiResponse(responseCode = "200", description = "Successfully persisted.",
         content = [Content(schema = Schema(implementation = Long::class))])
   ])
-  fun findAllProduct(): ResponseEntity<List<Product>> {
+  fun findAllProduct(): ResponseEntity<List<Whisky>> {
     log.info("GET /product")
     try {
       val products = service.findAllProduct()

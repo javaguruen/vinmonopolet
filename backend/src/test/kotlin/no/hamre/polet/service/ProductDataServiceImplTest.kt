@@ -1,8 +1,8 @@
 package no.hamre.polet.service
 
 import no.hamre.polet.dao.Dao
-import no.hamre.polet.modell.Price
-import no.hamre.polet.modell.Product
+import no.hamre.polet.modell.Pris
+import no.hamre.polet.modell.Whisky
 import no.hamre.polet.modell.ProductLineHelper
 import no.hamre.polet.service.ServiceTestData.dao
 import no.hamre.polet.service.ServiceTestData.idPrice
@@ -22,21 +22,31 @@ object ServiceTestData {
   const val idProd: Long = 1
   const val idPrice: Long = 100
   val productLine = ProductLineHelper.create(line.split(";"))!!
-  val price = Price(idPrice, productLine.datotid, productLine.varenummer,
+  val price = Pris(idPrice, productLine.datotid, productLine.varenummer,
       productLine.volum, productLine.pris, productLine.literpris,
       productLine.produktutvalg, productLine.butikkategori, LocalDateTime.now())
   //val priceChanged = price.copy(pris = 345.0, updated = price.updated.plus(1, WEEKS))
-  val product = Product(idProd, productLine.datotid, productLine.varenummer, productLine.varenavn,
-      productLine.varetype, productLine.volum,
-      productLine.fylde,
-      productLine.friskhet, productLine.garvestoffer, productLine.bitterhet,
-      productLine.sodme, productLine.farge, productLine.lukt, productLine.smak,
-      productLine.passertil01, productLine.passertil02, productLine.passertil03,
-      productLine.land, productLine.distrikt, productLine.underdistrikt, productLine.aargang,
-      productLine.raastoff, productLine.metode, productLine.alkohol, productLine.sukker,
-      productLine.syre, productLine.lagringsgrad, productLine.produsent, productLine.grossist,
-      productLine.distributor, productLine.emballasjetype, productLine.korktype,
-      productLine.vareurl, active = true, updated = productLine.updated
+  val product = Whisky(
+    id = idProd,
+    datotid = productLine.datotid,
+    varenummer = productLine.varenummer,
+    varenavn = productLine.varenavn,
+    varetype = productLine.varetype,
+    volum = productLine.volum,
+    farge = productLine.farge,
+    lukt = productLine.lukt,
+    smak = productLine.smak,
+    land = productLine.land,
+    distrikt = productLine.distrikt,
+    underdistrikt = productLine.underdistrikt,
+    aargang = productLine.aargang,
+    raastoff = productLine.raastoff,
+    metode = productLine.metode,
+    alkohol = productLine.alkohol,
+    produsent = productLine.produsent,
+    grossist = productLine.grossist,
+    distributor = productLine.distributor,
+    vareurl = productLine.vareurl, active = true, updated = productLine.updated
   )
 }
 
@@ -52,13 +62,13 @@ class ProductDataServiceImplTest {
   fun `Non existing product should be inserted with price`() {
     val productId = "4596101"
     `when`(dao.findByVarenummer(productId)).thenReturn(null)
-    `when`(dao.insertProduct(productLine)).thenReturn(idProd)
-    `when`(dao.insertPrice(productLine, idProd, null)).thenReturn(idPrice)
+    `when`(dao.insertWhisky(productLine)).thenReturn(idProd)
+    `when`(dao.insertPris(productLine, idProd, null)).thenReturn(idPrice)
     service.update(productLine)
 
     verify(dao, times(1)).findByVarenummer(productId)
-    verify(dao, times(1)).insertProduct(productLine)
-    verify(dao, times(1)).insertPrice(productLine, idProd, null)
+    verify(dao, times(1)).insertWhisky(productLine)
+    verify(dao, times(1)).insertPris(productLine, idProd, null)
   }
 
   @Test
@@ -68,15 +78,15 @@ class ProductDataServiceImplTest {
     val productLineWithId = productLine.copy(id = 1L)
     `when`(dao.findByVarenummer(varenummer)).thenReturn(productWithId)
     doNothing().`when`(dao).updateProductTimestamp(idProd)
-    `when`(dao.getLatestPrice(idProd)).thenReturn(price)
+    `when`(dao.getLatestPris(idProd)).thenReturn(price)
 
     service.update(productLine)
 
     verify(dao, times(1)).findByVarenummer(varenummer)
-    verify(dao, times(0)).insertProduct(productLine)
+    verify(dao, times(0)).insertWhisky(productLine)
     verify(dao, times(1)).updateProductTimestamp(idProd)
-    verify(dao, times(1)).getLatestPrice(idProd)
-    verify(dao, times(0)).insertPrice(productLineWithId, productWithId.id, null)
+    verify(dao, times(1)).getLatestPris(idProd)
+    verify(dao, times(0)).insertPris(productLineWithId, productWithId.id, null)
   }
 
   @Test
@@ -84,15 +94,15 @@ class ProductDataServiceImplTest {
     val productId = "4596101"
     `when`(dao.findByVarenummer(productId)).thenReturn(product)
     doNothing().`when`(dao).updateProductTimestamp(idProd)
-    `when`(dao.getLatestPrice(idProd)).thenReturn(null)
+    `when`(dao.getLatestPris(idProd)).thenReturn(null)
 
     service.update(productLine)
 
     verify(dao, times(1)).findByVarenummer(productId)
-    verify(dao, times(0)).insertProduct(productLine)
+    verify(dao, times(0)).insertWhisky(productLine)
     verify(dao, times(1)).updateProductTimestamp(idProd)
-    verify(dao, times(1)).getLatestPrice(idProd)
-    verify(dao, times(1)).insertPrice(productLine, idProd, null)
+    verify(dao, times(1)).getLatestPris(idProd)
+    verify(dao, times(1)).insertPris(productLine, idProd, null)
   }
 
 
@@ -102,16 +112,16 @@ class ProductDataServiceImplTest {
     val productLineWithNewPrice = productLine.copy(pris = 1200.0)
     `when`(dao.findByVarenummer(productLine.varenummer)).thenReturn(product)
     doNothing().`when`(dao).updateProductTimestamp(idProd)
-    `when`(dao.getLatestPrice(idProd)).thenReturn(price)
+    `when`(dao.getLatestPris(idProd)).thenReturn(price)
 
     service.update(productLineWithNewPrice)
 
     verify(dao, times(1)).findByVarenummer(productLine.varenummer)
-    verify(dao, times(0)).insertProduct(productLine)
+    verify(dao, times(0)).insertWhisky(productLine)
     verify(dao, times(1)).updateProductTimestamp(idProd)
     verify(dao, times(1)).priceChanged(price.id, productLineWithNewPrice.datotid, productLineWithNewPrice.pris - price.pris)
-    verify(dao, times(1)).getLatestPrice(idProd)
-    verify(dao, times(1)).insertPrice(productLineWithNewPrice, productLineWithId.id!!, productLineWithNewPrice.pris)
+    verify(dao, times(1)).getLatestPris(idProd)
+    verify(dao, times(1)).insertPris(productLineWithNewPrice, productLineWithId.id!!, productLineWithNewPrice.pris)
   }
 
 }

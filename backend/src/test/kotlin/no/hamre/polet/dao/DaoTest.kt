@@ -11,7 +11,7 @@ class DaoTest {
 
   @Test
   fun `Insert new product`() {
-    val id = dao.insertProduct(product)
+    val id = dao.insertWhisky(product)
     assert(id > 0)
     val storedProduct = dao.findByVarenummer(product.varenummer)
     assert(storedProduct != null)
@@ -20,17 +20,9 @@ class DaoTest {
     assert(storedProduct?.varenavn == product.varenavn)
     assert(storedProduct?.varetype == product.varetype)
     assert(storedProduct?.volum == product.volum)
-    assert(storedProduct?.fylde == product.fylde)
-    assert(storedProduct?.friskhet == product.friskhet)
-    assert(storedProduct?.garvestoffer == product.garvestoffer)
-    assert(storedProduct?.bitterhet == product.bitterhet)
-    assert(storedProduct?.sodme == product.sodme)
     assert(storedProduct?.farge == product.farge)
     assert(storedProduct?.lukt == product.lukt)
     assert(storedProduct?.smak == product.smak)
-    assert(storedProduct?.passertil01 == product.passertil01)
-    assert(storedProduct?.passertil02 == product.passertil02)
-    assert(storedProduct?.passertil03 == product.passertil03)
     assert(storedProduct?.land == product.land)
     assert(storedProduct?.distrikt == product.distrikt)
     assert(storedProduct?.underdistrikt == product.underdistrikt)
@@ -38,14 +30,9 @@ class DaoTest {
     assert(storedProduct?.raastoff == product.raastoff)
     assert(storedProduct?.metode == product.metode)
     assert(storedProduct?.alkohol == product.alkohol)
-    assert(storedProduct?.sukker == product.sukker)
-    assert(storedProduct?.syre == product.syre)
-    assert(storedProduct?.lagringsgrad == product.lagringsgrad)
     assert(storedProduct?.produsent == product.produsent)
     assert(storedProduct?.grossist == product.grossist)
     assert(storedProduct?.distributor == product.distributor)
-    assert(storedProduct?.emballasjetype == product.emballasjetype)
-    assert(storedProduct?.korktype == product.korktype)
     assert(storedProduct?.vareurl == product.vareurl)
     assert(storedProduct?.active!!)
     assert(storedProduct.updated != null)
@@ -54,7 +41,7 @@ class DaoTest {
 
   @Test
   fun `Update timestamp`() {
-    val id = dao.insertProduct(product)
+    val id = dao.insertWhisky(product)
     val inserted = dao.findByVarenummer(product.varenummer)
     Thread.sleep(10)
     dao.updateProductTimestamp(id)
@@ -64,7 +51,7 @@ class DaoTest {
 
   @Test
   fun `Get timestamps`() {
-    dao.insertProduct(product)
+    dao.insertWhisky(product)
     val dates = dao.findReleaseDates()
     assert(dates.size == 1)
     assert(dates.first() == product.datotid.toLocalDate())
@@ -72,8 +59,8 @@ class DaoTest {
 
   @Test
   fun `Get mini products`() {
-    val productId = dao.insertProduct(product)
-    dao.insertPrice(product, productId, null)
+    val productId = dao.insertWhisky(product)
+    dao.insertPris(product, productId, null)
     val products = dao.findReleasesByDate(product.datotid.toLocalDate())
     assert(products.size == 1)
     val prod = products.first()
@@ -82,20 +69,20 @@ class DaoTest {
 
   @Test
   fun `Insert price`() {
-    val productId = dao.insertProduct(product)
-    val id = dao.insertPrice(product, productId, null)
+    val productId = dao.insertWhisky(product)
+    val id = dao.insertPris(product, productId, null)
     assert(id > 0)
   }
 
   @Test
   fun `Get latets price`() {
-    val productId = dao.insertProduct(product)
-    val idFirst = dao.insertPrice(product, productId, null)
+    val productId = dao.insertWhisky(product)
+    val idFirst = dao.insertPris(product, productId, null)
     Thread.sleep(10)
     val newPrice = 1000.50
     dao.priceChanged(idFirst, product.datotid.plus(1, ChronoUnit.DAYS), newPrice - product.pris)
-    val idSecond = dao.insertPrice(product.copy(datotid = LocalDateTime.now(), pris = newPrice), productId, product.pris)
-    val latetsPrice = dao.getLatestPrice(productId)
+    val idSecond = dao.insertPris(product.copy(datotid = LocalDateTime.now(), pris = newPrice), productId, product.pris)
+    val latetsPrice = dao.getLatestPris(productId)
     assert(latetsPrice?.id == idSecond)
     assert(latetsPrice?.pris == newPrice)
   }
@@ -103,8 +90,8 @@ class DaoTest {
 
   @Test
   fun `findAll should return all rows`(){
-      dao.insertProduct(product)
-      dao.insertProduct(product.copy(varenummer = "321"))
+      dao.insertWhisky(product)
+      dao.insertWhisky(product.copy(varenummer = "321"))
       val products = dao.findAll()
       assert(products.size == 2)
   }

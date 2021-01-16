@@ -1,9 +1,9 @@
 package no.hamre.polet.rest
 
-import no.hamre.polet.modell.Product
+import no.hamre.polet.modell.Whisky
 
 object DomainToApiMapper {
-  fun mapToMiniProduct(model: Product): QueryProduct {
+  fun mapToMiniProduct(model: Whisky): QueryProduct {
     return QueryProduct(
         id = model.id,
         varenummer = model.varenummer,
