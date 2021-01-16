@@ -14,14 +14,14 @@ class GraphQLDataFetchers(private val dao: Dao) {
     return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
       val name = dataFetchingEnvironment.getArgument<String>("name")
       LOG.info("Find whisky by name = {}", name)
-      dao.query(name)
+      dao.search(name)
     }
   }
 
   fun produkterFromLatestRelease(): DataFetcher<*> {
     return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
       LOG.info("Find whiskies from latest release ")
-      dao.findLatestReleases()
+      dao.findBySisteSlipp()
     }
   }
 
@@ -29,7 +29,7 @@ class GraphQLDataFetchers(private val dao: Dao) {
     return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
       val whisky: Whisky = dataFetchingEnvironment.getSource()
       val productId = whisky.id
-      dao.findPrices(productId = productId)
+      dao.findPriser(whiskyId = productId)
     }
   }
 

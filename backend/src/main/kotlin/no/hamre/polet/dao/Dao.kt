@@ -18,45 +18,43 @@ import javax.sql.DataSource
 
 interface Dao {
   fun findAll(): List<Whisky>
-  fun query(q: String): List<Whisky>
-  fun findLatestReleases(): List<Whisky>
+  fun search(q: String): List<Whisky>
+  fun findBySisteSlipp(): List<Whisky>
   fun findByVarenummer(varenummer: String): Whisky?
   fun findById(id: Long): Whisky?
-  fun updateProductTimestamp(id: Long)
+  fun setWhiskyUpdated(id: Long)
 
   fun insertWhisky(product: Productline): Long
-  fun getLatestPris(productId: Long): Pris?
+  fun findGjeldendePris(whiskyId: Long): Pris?
 
-  fun findPrices(productId: Long): List<Pris>
+  fun findPriser(whiskyId: Long): List<Pris>
 
-  fun insertPris(product: Productline, productId: Long, oldPrice: Double?): Long
+  fun insertPris(product: Productline, whiskyId: Long, forrigePris: Double?): Long
 
-  fun priceChanged(priceId: Long, updated: LocalDateTime, priceChange: Double)
+  fun setPrisendring(prisId: Long, oppdatert: LocalDateTime, prisendring: Double)
 
-  fun findReleaseDates(): List<LocalDate>
+  fun findSlippdatoer(): List<LocalDate>
 
-  fun findReleasesByDate(releaseDate: LocalDate): List<MiniProduct>
+  fun findBySlippdato(slippdato: LocalDate): List<MiniProduct>
 }
 
 @Repository
-class PoletDao(dataSource: DataSource)
-  : Dao, PrisResultSetHandler {
+class PoletDao(dataSource: DataSource) : Dao, PrisResultSetHandler {
   private val sql2o = Sql2o(dataSource, PostgresQuirks())
-  private val log = LoggerFactory.getLogger(this.javaClass)
 
-  override fun updateProductTimestamp(id: Long) {
+  override fun setWhiskyUpdated(id: Long) {
     var con: Connection? = null
     try {
       con = sql2o.beginTransaction()
       val sql =
-          """
+        """
            | UPDATE whisky
            | SET UPDATED = CURRENT_TIMESTAMP
            | WHERE id = :id
       """.trimMargin()
       val rows = con.createQuery(sql)
-          .addParameter("id", id)
-          .executeUpdate().result
+        .addParameter("id", id)
+        .executeUpdate().result
       if (rows != 1) {
         throw DatabaseException("Expected to update only 1 row - was $rows")
       }
@@ -67,7 +65,7 @@ class PoletDao(dataSource: DataSource)
     }
   }
 
-  override fun query(q: String): List<Whisky> {
+  override fun search(q: String): List<Whisky> {
     val safeParam = SqlInputCleaner.clean(q)
     val sql = """
       SELECT * FROM whisky WHERE lower(varenavn) LIKE '%$safeParam%'
@@ -78,9 +76,9 @@ class PoletDao(dataSource: DataSource)
     try {
       con = sql2o.beginTransaction()
       val products = con.createQuery(sql)
-          .executeAndFetchTable().rows().map { r ->
-            mapToWhisky(r)
-          }
+        .executeAndFetchTable().rows().map { r ->
+          mapToWhisky(r)
+        }
       return products
     } catch (e: Exception) {
       con?.rollback(true)
@@ -90,16 +88,16 @@ class PoletDao(dataSource: DataSource)
 
   override fun findAll(): List<Whisky> {
     val sql =
-        """
+      """
         | SELECT * from whisky
       """.trimMargin()
     var con: Connection? = null
     try {
       con = sql2o.beginTransaction()
       val products = con.createQuery(sql)
-          .executeAndFetchTable().rows().map { r ->
-            mapToWhisky(r)
-          }
+        .executeAndFetchTable().rows().map { r ->
+          mapToWhisky(r)
+        }
       return products
     } catch (e: Exception) {
       con?.rollback(true)
@@ -107,9 +105,9 @@ class PoletDao(dataSource: DataSource)
     }
   }
 
-  override fun findLatestReleases(): List<Whisky> {
+  override fun findBySisteSlipp(): List<Whisky> {
     val sql =
-        """
+      """
         | SELECT w.*
         | FROM whisky w
         | INNER JOIN pris p ON p.whisky_id = w.id
@@ -122,9 +120,9 @@ class PoletDao(dataSource: DataSource)
     try {
       con = sql2o.beginTransaction()
       val products = con.createQuery(sql)
-          .executeAndFetchTable().rows().map { r ->
-            mapToWhisky(r)
-          }
+        .executeAndFetchTable().rows().map { r ->
+          mapToWhisky(r)
+        }
       return products
     } catch (e: Exception) {
       con?.rollback(true)
@@ -134,31 +132,31 @@ class PoletDao(dataSource: DataSource)
 
   private fun mapToWhisky(r: Row): Whisky {
     return Whisky(
-        r.getLong("id"),
-        r.getDate("datotid")
-            .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
-        r.getString("varenummer"),
-        r.getString("varenavn"),
-        r.getString("varetype"),
-        r.getDouble("volum"),
-        r.getString("farge"),
-        r.getString("lukt"),
-        r.getString("smak"),
-        r.getString("land"),
-        r.getString("distrikt"),
-        r.getString("underdistrikt"),
-        r.getInteger("aargang"),
-        r.getString("raastoff"),
-        r.getString("metode"),
-        r.getDouble("alkohol"),
-        r.getString("produsent"),
-        r.getString("grossist"),
-        r.getString("distributor"),
-        r.getString("vareurl"),
-        r.getInteger("active") == 1,
-        r.getDate("updated")
-            .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
-        listOf()
+      r.getLong("id"),
+      r.getDate("datotid")
+        .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+      r.getString("varenummer"),
+      r.getString("varenavn"),
+      r.getString("varetype"),
+      r.getDouble("volum"),
+      r.getString("farge"),
+      r.getString("lukt"),
+      r.getString("smak"),
+      r.getString("land"),
+      r.getString("distrikt"),
+      r.getString("underdistrikt"),
+      r.getInteger("aargang"),
+      r.getString("raastoff"),
+      r.getString("metode"),
+      r.getDouble("alkohol"),
+      r.getString("produsent"),
+      r.getString("grossist"),
+      r.getString("distributor"),
+      r.getString("vareurl"),
+      r.getInteger("active") == 1,
+      r.getDate("updated")
+        .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+      listOf()
     )
   }
 
@@ -169,9 +167,9 @@ class PoletDao(dataSource: DataSource)
       //val defaultZoneId = ZoneId.systemDefault()
       con = sql2o.beginTransaction()
       val whiskies: List<Whisky> = con.createQuery(sql)
-          .addParameter("varenummer", varenummer)
-          .executeAndFetchTable().rows()
-          .map { r -> mapToWhisky(r) }
+        .addParameter("varenummer", varenummer)
+        .executeAndFetchTable().rows()
+        .map { r -> mapToWhisky(r) }
       con.close()
       return when (whiskies.size) {
         0 -> null
@@ -185,15 +183,15 @@ class PoletDao(dataSource: DataSource)
   }
 
   override fun findById(id: Long): Whisky? {
-    val sql = "SELECT * FROM t_product WHERE id=:id"
+    val sql = "SELECT * FROM whisky WHERE id=:id"
     var con: Connection? = null
     try {
       //val defaultZoneId = ZoneId.systemDefault()
       con = sql2o.beginTransaction()
       val whiskies: List<Whisky> = con.createQuery(sql)
-          .addParameter("id", id)
-          .executeAndFetchTable().rows()
-          .map { r -> mapToWhisky(r) }
+        .addParameter("id", id)
+        .executeAndFetchTable().rows()
+        .map { r -> mapToWhisky(r) }
       con.close()
       return when (whiskies.size) {
         0 -> null
@@ -206,12 +204,12 @@ class PoletDao(dataSource: DataSource)
     }
   }
 
-  override fun insertPris(whisky: Productline, productId: Long, gammelPris: Double?): Long {
+  override fun insertPris(whisky: Productline, whiskyId: Long, gammelPris: Double?): Long {
     var con: Connection? = null
     try {
       con = sql2o.beginTransaction()
       val sql =
-          """
+        """
            | INSERT INTO pris (id, whisky_id, datotid, varenummer, volum, pris, literpris, produktutvalg,
            |   butikkategori, active_to, price_change)
            | VALUES ( nextval('price_id_seq'), :productId, :datotid, :varenummer, :volum, :pris, :literpris, :produktutvalg,
@@ -219,10 +217,10 @@ class PoletDao(dataSource: DataSource)
       """.trimMargin()
       val priceChange = gammelPris?.let { op -> whisky.pris - op } ?: 0.0
       val id: Long = con.createQuery(sql, true)
-          .bind(whisky)
-          .addParameter("productId", productId)
-          .addParameter("priceChange", priceChange)
-          .executeUpdate().getKey(Long::class.java)
+        .bind(whisky)
+        .addParameter("productId", whiskyId)
+        .addParameter("priceChange", priceChange)
+        .executeUpdate().getKey(Long::class.java)
       con.commit(true)
       return id
     } catch (e: Exception) {
@@ -232,17 +230,17 @@ class PoletDao(dataSource: DataSource)
     }
   }
 
-  override fun priceChanged(priceId: Long, updated: LocalDateTime, priceChange: Double) {
+  override fun setPrisendring(prisId: Long, oppdatert: LocalDateTime, prisendring: Double) {
     var con: Connection? = null
     try {
       con = sql2o.beginTransaction()
       val sql =
-          "UPDATE pris SET active_to = :updated, price_change=:priceChange WHERE id=:priceid"
+        "UPDATE pris SET active_to = :updated, price_change=:priceChange WHERE id=:priceid"
       con.createQuery(sql)
-          .addParameter("updated", updated)
-          .addParameter("priceid", priceId)
-          .addParameter("priceChange", priceChange)
-          .executeUpdate()
+        .addParameter("updated", oppdatert)
+        .addParameter("priceid", prisId)
+        .addParameter("priceChange", prisendring)
+        .executeUpdate()
       con.commit(true)
     } catch (e: Exception) {
       con?.rollback(true)
@@ -251,20 +249,20 @@ class PoletDao(dataSource: DataSource)
   }
 
 
-  override fun getLatestPris(whiskyId: Long): Pris? {
+  override fun findGjeldendePris(whiskyId: Long): Pris? {
     var con: Connection? = null
     try {
       con = sql2o.beginTransaction()
       val sql =
-          """
+        """
            | SELECT * FROM pris 
            | WHERE 
            |    whisky_id = :productid 
            |    AND active_to IS NULL
       """.trimMargin()
       val pris: Pris? = con.createQuery(sql)
-          .addParameter("productid", whiskyId)
-          .executeAndFetchFirst(this)
+        .addParameter("productid", whiskyId)
+        .executeAndFetchFirst(this)
       con.commit(true)
       return pris
     } catch (e: Exception) {
@@ -273,20 +271,20 @@ class PoletDao(dataSource: DataSource)
     }
   }
 
-  override fun findPrices(whiskyId: Long): List<Pris> {
+  override fun findPriser(whiskyId: Long): List<Pris> {
     var con: Connection? = null
     try {
       con = sql2o.beginTransaction()
       val sql =
-          """
+        """
            | SELECT *
            | FROM pris
            | WHERE whisky_id = :productid
            | ORDER BY datotid DESC
       """.trimMargin()
       val priser: List<Pris> = con.createQuery(sql)
-          .addParameter("productid", whiskyId)
-          .executeAndFetch(this)
+        .addParameter("productid", whiskyId)
+        .executeAndFetch(this)
       con.commit(true)
       return priser
     } catch (e: Exception) {
@@ -297,7 +295,7 @@ class PoletDao(dataSource: DataSource)
 
   override fun insertWhisky(product: Productline): Long {
     val sql =
-        """
+      """
         | INSERT INTO whisky (id, datotid, varenummer, varenavn, varetype, volum,
         |   farge, lukt, smak, land, distrikt, underdistrikt, aargang, raastoff, metode, alkohol, 
         |   produsent, grossist, distributor, vareurl, active)
@@ -309,9 +307,9 @@ class PoletDao(dataSource: DataSource)
     try {
       con = sql2o.beginTransaction()
       val id: Long = con.createQuery(sql, true)
-          .bind(product)
-          .executeUpdate()
-          .getKey(Long::class.java)
+        .bind(product)
+        .executeUpdate()
+        .getKey(Long::class.java)
       log.info("Generated key:  type=${id.javaClass.getName()} key=$id")
       con.commit(true)
       return id
@@ -322,19 +320,19 @@ class PoletDao(dataSource: DataSource)
     }
   }
 
-  override fun findReleaseDates(): List<LocalDate> {
+  override fun findSlippdatoer(): List<LocalDate> {
     val sql =
-        """
+      """
         | SELECT DISTINCT datotid::date as date FROM whisky ORDER BY 1 DESC
       """.trimMargin()
     var con: Connection? = null
     try {
       con = sql2o.beginTransaction()
       val dates = con.createQuery(sql).executeAndFetchTable()
-          .rows().map { row ->
-            (row.getDate("date") as Date)
-                .toLocalDate()
-          }
+        .rows().map { row ->
+          (row.getDate("date") as Date)
+            .toLocalDate()
+        }
       con.commit(true)
       return dates
     } catch (e: Exception) {
@@ -345,9 +343,9 @@ class PoletDao(dataSource: DataSource)
 
   }
 
-  override fun findReleasesByDate(releaseDate: LocalDate): List<MiniProduct> {
+  override fun findBySlippdato(slippdato: LocalDate): List<MiniProduct> {
     val sql =
-        """
+      """
         | SELECT w.*, p.pris
         | FROM whisky w
         |   INNER JOIN pris p ON p.whisky_id = w.id AND p.active_to IS NULL
@@ -358,18 +356,18 @@ class PoletDao(dataSource: DataSource)
     try {
       con = sql2o.beginTransaction()
       val dates = con.createQuery(sql)
-          .addParameter("releaseDate", Date.valueOf(releaseDate))
-          .executeAndFetchTable()
-          .rows().map { row ->
-            MiniProduct(
-                row.getLong("id"),
-                row.getString("varenummer"),
-                row.getString("varenavn"),
-                row.getDouble("volum"),
-                row.getDouble("pris"),
-                listOf()
-            )
-          }
+        .addParameter("releaseDate", Date.valueOf(slippdato))
+        .executeAndFetchTable()
+        .rows().map { row ->
+          MiniProduct(
+            row.getLong("id"),
+            row.getString("varenummer"),
+            row.getString("varenavn"),
+            row.getDouble("volum"),
+            row.getDouble("pris"),
+            listOf()
+          )
+        }
       con.commit(true)
       return dates
     } catch (e: Exception) {
@@ -378,22 +376,27 @@ class PoletDao(dataSource: DataSource)
       throw RuntimeException(e.message, e)
     }
   }
+
+  companion object {
+    private val log = LoggerFactory.getLogger(this.javaClass)
+  }
+
 }
 
 interface PrisResultSetHandler : ResultSetHandler<Pris> {
   override fun handle(resultSet: ResultSet): Pris {
     return Pris(
-        resultSet.getLong("id"),
-        resultSet.getTimestamp("datotid").toLocalDateTime(), //.atZone(defaultZoneId).toLocalDateTime,
-        resultSet.getString("varenummer"),
-        resultSet.getDouble("volum"),
-        resultSet.getDouble("pris"),
-        resultSet.getDouble("literpris"),
-        resultSet.getString("produktutvalg"),
-        resultSet.getString("butikkategori"),
-        resultSet.getTimestamp("updated")
-            .toInstant().atZone(ZoneId.systemDefault())
-            .toLocalDateTime()
+      resultSet.getLong("id"),
+      resultSet.getTimestamp("datotid").toLocalDateTime(), //.atZone(defaultZoneId).toLocalDateTime,
+      resultSet.getString("varenummer"),
+      resultSet.getDouble("volum"),
+      resultSet.getDouble("pris"),
+      resultSet.getDouble("literpris"),
+      resultSet.getString("produktutvalg"),
+      resultSet.getString("butikkategori"),
+      resultSet.getTimestamp("updated")
+        .toInstant().atZone(ZoneId.systemDefault())
+        .toLocalDateTime()
     )
   }
 }

@@ -28,8 +28,8 @@ class ProductDataServiceImpl(
   private val log = LoggerFactory.getLogger(this.javaClass)
 
   override fun findLatestReleases(): List<Whisky> {
-    val products: List<Whisky> = dao.findLatestReleases()
-    return products.map { p -> p.copy(prices = dao.findPrices(p.id)) }
+    val products: List<Whisky> = dao.findBySisteSlipp()
+    return products.map { p -> p.copy(prices = dao.findPriser(p.id)) }
   }
 
   override fun updateFromApi(): DownloadResult {
@@ -88,8 +88,8 @@ class ProductDataServiceImpl(
     val p = dao.findByVarenummer(product.varenummer)
     if (p != null) {
       log.info("Found varenummer ${p.varenummer} with id ${p.id}")
-      dao.updateProductTimestamp(p.id)
-      val latestPrice = dao.getLatestPris(p.id)
+      dao.setWhiskyUpdated(p.id)
+      val latestPrice = dao.findGjeldendePris(p.id)
       log.info("Latest price=$latestPrice")
       if (latestPrice == null) {
         dao.insertPris(product, p.id, null)
@@ -99,7 +99,7 @@ class ProductDataServiceImpl(
         return UpdateStat(added = false, priceChanged = false)
       } else {
         log.info("Price changed from ${latestPrice.pris} to ${product.pris} for product ${p.id}")
-        dao.priceChanged(latestPrice.id, product.datotid, product.pris - latestPrice.pris)
+        dao.setPrisendring(latestPrice.id, product.datotid, product.pris - latestPrice.pris)
         dao.insertPris(product, p.id, product.pris)
         return UpdateStat(added = false, priceChanged = true)
       }
@@ -113,22 +113,22 @@ class ProductDataServiceImpl(
 
   override fun findProductById(productId: Long): Whisky? {
     val product = dao.findById(productId)
-    return product?.let { p -> p.copy(prices = dao.findPrices(p.id)) }
+    return product?.let { p -> p.copy(prices = dao.findPriser(p.id)) }
   }
 
   override fun findProducts(q: String): List<Whisky> {
-    return dao.query(q)
+    return dao.search(q)
   }
 
   override fun findProductByReleaseDate(): List<ProductRelease> {
-    val releaseDates: List<LocalDate> = dao.findReleaseDates()
-    val miniProducts = dao.findReleasesByDate(releaseDates.first())
+    val releaseDates: List<LocalDate> = dao.findSlippdatoer()
+    val miniProducts = dao.findBySlippdato(releaseDates.first())
     return listOf(ProductRelease(releaseDates.first(), miniProducts, listOf())) +
         releaseDates.subList(1, releaseDates.size).map { date -> ProductRelease(date, listOf(), listOf()) }
   }
 
   override fun findAllProduct(): List<Whisky> {
-    return dao.findAll().map { p -> p.copy(prices = dao.findPrices(p.id)) }
+    return dao.findAll().map { p -> p.copy(prices = dao.findPriser(p.id)) }
   }
 }
 

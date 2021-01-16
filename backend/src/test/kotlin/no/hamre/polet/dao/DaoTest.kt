@@ -44,7 +44,7 @@ class DaoTest {
     val id = dao.insertWhisky(product)
     val inserted = dao.findByVarenummer(product.varenummer)
     Thread.sleep(10)
-    dao.updateProductTimestamp(id)
+    dao.setWhiskyUpdated(id)
     val updated = dao.findByVarenummer(product.varenummer)
     assert(updated?.updated?.isAfter(inserted?.updated) ?: false)
   }
@@ -52,7 +52,7 @@ class DaoTest {
   @Test
   fun `Get timestamps`() {
     dao.insertWhisky(product)
-    val dates = dao.findReleaseDates()
+    val dates = dao.findSlippdatoer()
     assert(dates.size == 1)
     assert(dates.first() == product.datotid.toLocalDate())
   }
@@ -61,7 +61,7 @@ class DaoTest {
   fun `Get mini products`() {
     val productId = dao.insertWhisky(product)
     dao.insertPris(product, productId, null)
-    val products = dao.findReleasesByDate(product.datotid.toLocalDate())
+    val products = dao.findBySlippdato(product.datotid.toLocalDate())
     assert(products.size == 1)
     val prod = products.first()
     assert(prod.price == product.pris)
@@ -80,9 +80,9 @@ class DaoTest {
     val idFirst = dao.insertPris(product, productId, null)
     Thread.sleep(10)
     val newPrice = 1000.50
-    dao.priceChanged(idFirst, product.datotid.plus(1, ChronoUnit.DAYS), newPrice - product.pris)
+    dao.setPrisendring(idFirst, product.datotid.plus(1, ChronoUnit.DAYS), newPrice - product.pris)
     val idSecond = dao.insertPris(product.copy(datotid = LocalDateTime.now(), pris = newPrice), productId, product.pris)
-    val latetsPrice = dao.getLatestPris(productId)
+    val latetsPrice = dao.findGjeldendePris(productId)
     assert(latetsPrice?.id == idSecond)
     assert(latetsPrice?.pris == newPrice)
   }

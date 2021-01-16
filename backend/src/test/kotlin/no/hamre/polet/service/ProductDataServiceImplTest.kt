@@ -77,15 +77,15 @@ class ProductDataServiceImplTest {
     val productWithId = product.copy(id = 1L)
     val productLineWithId = productLine.copy(id = 1L)
     `when`(dao.findByVarenummer(varenummer)).thenReturn(productWithId)
-    doNothing().`when`(dao).updateProductTimestamp(idProd)
-    `when`(dao.getLatestPris(idProd)).thenReturn(price)
+    doNothing().`when`(dao).setWhiskyUpdated(idProd)
+    `when`(dao.findGjeldendePris(idProd)).thenReturn(price)
 
     service.update(productLine)
 
     verify(dao, times(1)).findByVarenummer(varenummer)
     verify(dao, times(0)).insertWhisky(productLine)
-    verify(dao, times(1)).updateProductTimestamp(idProd)
-    verify(dao, times(1)).getLatestPris(idProd)
+    verify(dao, times(1)).setWhiskyUpdated(idProd)
+    verify(dao, times(1)).findGjeldendePris(idProd)
     verify(dao, times(0)).insertPris(productLineWithId, productWithId.id, null)
   }
 
@@ -93,15 +93,15 @@ class ProductDataServiceImplTest {
   fun `Existing product without price record should insert price`() {
     val productId = "4596101"
     `when`(dao.findByVarenummer(productId)).thenReturn(product)
-    doNothing().`when`(dao).updateProductTimestamp(idProd)
-    `when`(dao.getLatestPris(idProd)).thenReturn(null)
+    doNothing().`when`(dao).setWhiskyUpdated(idProd)
+    `when`(dao.findGjeldendePris(idProd)).thenReturn(null)
 
     service.update(productLine)
 
     verify(dao, times(1)).findByVarenummer(productId)
     verify(dao, times(0)).insertWhisky(productLine)
-    verify(dao, times(1)).updateProductTimestamp(idProd)
-    verify(dao, times(1)).getLatestPris(idProd)
+    verify(dao, times(1)).setWhiskyUpdated(idProd)
+    verify(dao, times(1)).findGjeldendePris(idProd)
     verify(dao, times(1)).insertPris(productLine, idProd, null)
   }
 
@@ -111,16 +111,16 @@ class ProductDataServiceImplTest {
     val productLineWithId = productLine.copy(id = idProd)
     val productLineWithNewPrice = productLine.copy(pris = 1200.0)
     `when`(dao.findByVarenummer(productLine.varenummer)).thenReturn(product)
-    doNothing().`when`(dao).updateProductTimestamp(idProd)
-    `when`(dao.getLatestPris(idProd)).thenReturn(price)
+    doNothing().`when`(dao).setWhiskyUpdated(idProd)
+    `when`(dao.findGjeldendePris(idProd)).thenReturn(price)
 
     service.update(productLineWithNewPrice)
 
     verify(dao, times(1)).findByVarenummer(productLine.varenummer)
     verify(dao, times(0)).insertWhisky(productLine)
-    verify(dao, times(1)).updateProductTimestamp(idProd)
-    verify(dao, times(1)).priceChanged(price.id, productLineWithNewPrice.datotid, productLineWithNewPrice.pris - price.pris)
-    verify(dao, times(1)).getLatestPris(idProd)
+    verify(dao, times(1)).setWhiskyUpdated(idProd)
+    verify(dao, times(1)).setPrisendring(price.id, productLineWithNewPrice.datotid, productLineWithNewPrice.pris - price.pris)
+    verify(dao, times(1)).findGjeldendePris(idProd)
     verify(dao, times(1)).insertPris(productLineWithNewPrice, productLineWithId.id!!, productLineWithNewPrice.pris)
   }
 
