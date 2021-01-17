@@ -71,15 +71,14 @@ class PoletDao(dataSource: DataSource) : Dao, PrisResultSetHandler {
       SELECT * FROM whisky WHERE lower(varenavn) LIKE '%$safeParam%'
       UNION
       SELECT * FROM whisky WHERE lower(produsent) LIKE '%$safeParam%'
-    """.trimIndent().toString()
+    """.trimIndent()
     var con: Connection? = null
     try {
       con = sql2o.beginTransaction()
-      val products = con.createQuery(sql)
+      return con.createQuery(sql)
         .executeAndFetchTable().rows().map { r ->
           mapToWhisky(r)
         }
-      return products
     } catch (e: Exception) {
       con?.rollback(true)
       throw RuntimeException(e.message, e)
@@ -94,11 +93,10 @@ class PoletDao(dataSource: DataSource) : Dao, PrisResultSetHandler {
     var con: Connection? = null
     try {
       con = sql2o.beginTransaction()
-      val products = con.createQuery(sql)
+      return con.createQuery(sql)
         .executeAndFetchTable().rows().map { r ->
           mapToWhisky(r)
         }
-      return products
     } catch (e: Exception) {
       con?.rollback(true)
       throw RuntimeException(e.message, e)
@@ -119,11 +117,10 @@ class PoletDao(dataSource: DataSource) : Dao, PrisResultSetHandler {
     var con: Connection? = null
     try {
       con = sql2o.beginTransaction()
-      val products = con.createQuery(sql)
+      return con.createQuery(sql)
         .executeAndFetchTable().rows().map { r ->
           mapToWhisky(r)
         }
-      return products
     } catch (e: Exception) {
       con?.rollback(true)
       throw RuntimeException(e.message, e)
@@ -204,7 +201,7 @@ class PoletDao(dataSource: DataSource) : Dao, PrisResultSetHandler {
     }
   }
 
-  override fun insertPris(whisky: Productline, whiskyId: Long, gammelPris: Double?): Long {
+  override fun insertPris(product: Productline, whiskyId: Long, forrigePris: Double?): Long {
     var con: Connection? = null
     try {
       con = sql2o.beginTransaction()
@@ -215,9 +212,9 @@ class PoletDao(dataSource: DataSource) : Dao, PrisResultSetHandler {
            | VALUES ( nextval('price_id_seq'), :productId, :datotid, :varenummer, :volum, :pris, :literpris, :produktutvalg,
            |   :butikkategori, null, :priceChange)
       """.trimMargin()
-      val priceChange = gammelPris?.let { op -> whisky.pris - op } ?: 0.0
+      val priceChange = forrigePris?.let { op -> product.pris - op } ?: 0.0
       val id: Long = con.createQuery(sql, true)
-        .bind(whisky)
+        .bind(product)
         .addParameter("productId", whiskyId)
         .addParameter("priceChange", priceChange)
         .executeUpdate().getKey(Long::class.java)
@@ -310,7 +307,7 @@ class PoletDao(dataSource: DataSource) : Dao, PrisResultSetHandler {
         .bind(product)
         .executeUpdate()
         .getKey(Long::class.java)
-      log.info("Generated key:  type=${id.javaClass.getName()} key=$id")
+      log.info("Generated key:  type=${id.javaClass.name} key=$id")
       con.commit(true)
       return id
     } catch (e: Exception) {
@@ -378,7 +375,7 @@ class PoletDao(dataSource: DataSource) : Dao, PrisResultSetHandler {
   }
 
   companion object {
-    private val log = LoggerFactory.getLogger(this.javaClass)
+    private val log = LoggerFactory.getLogger(PoletDao::class.java)
   }
 
 }

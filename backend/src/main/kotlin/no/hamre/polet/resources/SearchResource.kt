@@ -31,14 +31,13 @@ class SearchResource(val service: ProductDataService, @Value("\${vinmonopolet.ur
   ])
   fun findProduct(@RequestParam(name="q", required = true) q: String): ResponseEntity<List<QueryProduct>> {
     log.info("GET /search?q=$q")
-    try {
-      return service.findProducts(q)
-          .map { DomainToApiMapper.mapToMiniProduct(it) }
-          .let { p -> ResponseEntity.ok(p) }
-          ?: ResponseEntity.notFound().build()
+    return try {
+      service.findProducts(q)
+        .map { DomainToApiMapper.mapToMiniProduct(it) }
+        .let { p -> ResponseEntity.ok(p) }
     } catch (e: Exception) {
       log.error("Exception getting products with q=$q. ${e.message}", e)
-      return ResponseEntity.status(500).build()
+      ResponseEntity.status(500).build()
     }
   }
 

@@ -19,7 +19,7 @@ class GraphQLDataFetchers(private val dao: Dao) {
   }
 
   fun produkterFromLatestRelease(): DataFetcher<*> {
-    return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
+    return DataFetcher {
       LOG.info("Find whiskies from latest release ")
       dao.findBySisteSlipp()
     }

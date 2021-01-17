@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.4.RELEASE</version>
+        <version>2.4.2</version>
     </parent>
 
     <modules>
@@ -18,30 +18,76 @@
     </modules>
 
     <properties>
-        <springdoc.version>1.4.8</springdoc.version>
+        <flyway.version>7.5.0</flyway.version>
         <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
-        <h2.version>1.4.194</h2.version>
-        <jackson.version>2.11.3</jackson.version>
+        <graphql-java.version>16.1</graphql-java.version>
+        <graphiql-spring-boot-starter.version>11.0.0</graphiql-spring-boot-starter.version>
+        <graphql-java-spring-boot-starter-webmvc.version>2.0</graphql-java-spring-boot-starter-webmvc.version>
+        <h2.version>1.4.200</h2.version>
+        <jackson.version>${jackson-bom.version}</jackson.version>
         <java.version>14</java.version>
+        <junit-jupiter-api.version>5.7.0</junit-jupiter-api.version>
         <kotlin.compiler.jvmTarget>14</kotlin.compiler.jvmTarget>
-        <kotlin.version>1.4.10</kotlin.version>
+        <kotlin.version>1.4.21</kotlin.version>
         <logback.version>1.2.3</logback.version>
-        <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <mockito.version>2.23.0</mockito.version>
-        <postgresql.version>9.4.1209</postgresql.version>
+        <mockito.version>3.7.7</mockito.version>
+        <postgresql.version>42.2.18</postgresql.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.21</slf4j.version>
         <snakeyaml.version>1.27</snakeyaml.version>
-        <springdoc.version>1.4.8</springdoc.version>
+        <springdoc.version>1.5.2</springdoc.version>
         <sql2o.version>1.5.4</sql2o.version>
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <junit-jupiter-api.version>5.5.2</junit-jupiter-api.version>
-        <flyway.version>6.4.4</flyway.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.graphql-java</groupId>
+                <artifactId>graphql-java</artifactId>
+                <version>${graphql-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.graphql-java-kickstart</groupId>
+                <artifactId>graphiql-spring-boot-starter</artifactId>
+                <version>${graphiql-spring-boot-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.graphql-java</groupId>
+                <artifactId>graphql-java-spring-boot-starter-webmvc</artifactId>
+                <version>${graphql-java-spring-boot-starter-webmvc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit-jupiter-api.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit-jupiter-api.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-kotlin</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
