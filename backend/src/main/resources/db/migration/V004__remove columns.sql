@@ -45,3 +45,6 @@ RENAME TO pris;
 
 ALTER TABLE pris
 RENAME COLUMN product_id TO whisky_id;
+
+ALTER TABLE pris
+DROP COLUMN butikkategori;

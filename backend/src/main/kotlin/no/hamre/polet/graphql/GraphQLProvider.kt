@@ -2,26 +2,18 @@ package no.hamre.polet.graphql
 
 import graphql.GraphQL
 import graphql.schema.GraphQLSchema
+import graphql.schema.idl.RuntimeWiring
+import graphql.schema.idl.SchemaGenerator
+import graphql.schema.idl.SchemaParser
+import graphql.schema.idl.TypeRuntimeWiring.newTypeWiring
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import java.io.IOException
 import javax.annotation.PostConstruct
-import graphql.schema.idl.SchemaGenerator
-
-import graphql.schema.idl.RuntimeWiring
-
-import graphql.schema.idl.SchemaParser
-import graphql.schema.idl.TypeRuntimeWiring
-
-import graphql.schema.idl.TypeRuntimeWiring.newTypeWiring
-import no.hamre.polet.service.ProductDataService
-import org.springframework.context.annotation.Configuration
 
 
 @Configuration
-class GraphQLProvider(
-  private val graphQLDataFetchers: GraphQLDataFetchers,
-  private val service: ProductDataService
-) {
+class GraphQLProvider(private val graphQLDataFetchers: GraphQLDataFetchers) {
 
   private var graphQL: GraphQL? = null
 
@@ -49,16 +41,15 @@ class GraphQLProvider(
     return RuntimeWiring.newRuntimeWiring()
       .type(
         newTypeWiring("Query")
-          .dataFetcher("produkterByName", graphQLDataFetchers.produkterByName())
-          .dataFetcher("latestRelease", graphQLDataFetchers.produkterFromLatestRelease())
+          .dataFetcher("soek", graphQLDataFetchers.soekPaaNavn())
+          .dataFetcher("sisteOppdateringer", graphQLDataFetchers.sisteOppdateringer())
       )
       .type(
-        newTypeWiring("Produkt")
-        .dataFetcher("prices", graphQLDataFetchers.pricesForProduct()))
-/*
-            .type(newTypeWiring("Book")
-                .dataFetcher("author", graphQLDataFetchers.getAuthorDataFetcher()))
-*/
+        newTypeWiring("Whisky")
+          .dataFetcher("navn", graphQLDataFetchers.whiskynavn())
+          .dataFetcher("destilleri", graphQLDataFetchers.destilleri())
+          .dataFetcher("priser", graphQLDataFetchers.priserForWhisky())
+      )
       .build()
   }
 }

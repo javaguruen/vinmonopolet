@@ -1,30 +1,22 @@
 type Query {
-    "Search for whiskies. Will search in whisky name and destillery"
-    produkterByName(name: String): [Produkt]
-    latestRelease: [Produkt]
+    "Søk etter whisky på navn eller destilleri"
+    soek(navn: String): [Whisky]
+    sisteOppdateringer: [Whisky]
 }
 """
 What vinmonopolet.no calls a Product, in this case a whisky
 """
-type Produkt {
+type Whisky {
     id: ID!,
     datotid: String!,
-    "Identificator for a product in vinmonopolet.no"
+    "vinmonopolet.no sin id på whiskyen"
     varenummer: String!,
-    varenavn: String!,
+    navn: String!,
     varetype: String!,
     volum: Float!,
-    fylde: Int!,
-    friskhet: Int!,
-    garvestoffer: Int!,
-    bitterhet: Int!,
-    sodme: Int!,
     farge: String,
     lukt: String,
     smak: String,
-    passertil01: String,
-    passertil02: String,
-    passertil03: String,
     land: String!,
     distrikt: String,
     underdistrikt: String,
@@ -32,22 +24,16 @@ type Produkt {
     raastoff: String,
     metode: String,
     alkohol:Float!,
-    sukker: String!,
-    syre: String,
-    lagringsgrad: String,
-    "Destillery"
-    produsent: String!,
+    destilleri: String!,
     grossist: String!,
     distributor: String!,
-    emballasjetype: String!,
-    korktype: String,
     vareurl: String!,
     active: Boolean!,
     updated: String,
-    prices: [Price]!
+    priser: [Pris]!
 }
 
-type Price{
+type Pris{
     id: ID!,
     datotid: String!,
     varenummer: String!,
@@ -55,6 +41,5 @@ type Price{
     pris: Float!,
     literpris: Float!,
     produktutvalg: String!,
-    butikkategori: String!,
     updated: String!
 }

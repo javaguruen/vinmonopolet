@@ -24,7 +24,7 @@ object ServiceTestData {
   val productLine = ProductLineHelper.create(line.split(";"))!!
   val price = Pris(idPrice, productLine.datotid, productLine.varenummer,
       productLine.volum, productLine.pris, productLine.literpris,
-      productLine.produktutvalg, productLine.butikkategori, LocalDateTime.now())
+      productLine.produktutvalg, LocalDateTime.now())
   //val priceChanged = price.copy(pris = 345.0, updated = price.updated.plus(1, WEEKS))
   val product = Whisky(
     id = idProd,

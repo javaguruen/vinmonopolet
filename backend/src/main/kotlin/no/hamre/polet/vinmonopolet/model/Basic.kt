@@ -1,7 +1,5 @@
 package no.hamre.polet.vinmonopolet.model
 
-import com.fasterxml.jackson.annotation.JsonCreator
-
 data class Product(
     val basic: Basic,
     val logistics: Logistics,

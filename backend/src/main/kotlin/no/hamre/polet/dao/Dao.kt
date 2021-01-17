@@ -208,9 +208,9 @@ class PoletDao(dataSource: DataSource) : Dao, PrisResultSetHandler {
       val sql =
         """
            | INSERT INTO pris (id, whisky_id, datotid, varenummer, volum, pris, literpris, produktutvalg,
-           |   butikkategori, active_to, price_change)
+           |   active_to, price_change)
            | VALUES ( nextval('price_id_seq'), :productId, :datotid, :varenummer, :volum, :pris, :literpris, :produktutvalg,
-           |   :butikkategori, null, :priceChange)
+           |   null, :priceChange)
       """.trimMargin()
       val priceChange = forrigePris?.let { op -> product.pris - op } ?: 0.0
       val id: Long = con.createQuery(sql, true)
@@ -390,7 +390,6 @@ interface PrisResultSetHandler : ResultSetHandler<Pris> {
       resultSet.getDouble("pris"),
       resultSet.getDouble("literpris"),
       resultSet.getString("produktutvalg"),
-      resultSet.getString("butikkategori"),
       resultSet.getTimestamp("updated")
         .toInstant().atZone(ZoneId.systemDefault())
         .toLocalDateTime()

@@ -10,26 +10,40 @@ import org.springframework.stereotype.Component
 @Component
 class GraphQLDataFetchers(private val dao: Dao) {
 
-  fun produkterByName(): DataFetcher<*> {
+  fun soekPaaNavn(): DataFetcher<*> {
     return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
-      val name = dataFetchingEnvironment.getArgument<String>("name")
-      LOG.info("Find whisky by name = {}", name)
-      dao.search(name)
+      val navn = dataFetchingEnvironment.getArgument<String>("navn")
+      LOG.info("Find whisky by name = {}", navn)
+      dao.search(navn)
     }
   }
 
-  fun produkterFromLatestRelease(): DataFetcher<*> {
+  fun sisteOppdateringer(): DataFetcher<*> {
     return DataFetcher {
       LOG.info("Find whiskies from latest release ")
       dao.findBySisteSlipp()
     }
   }
 
-  fun pricesForProduct(): DataFetcher<*> {
+  fun priserForWhisky(): DataFetcher<*> {
     return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
       val whisky: Whisky = dataFetchingEnvironment.getSource()
-      val productId = whisky.id
-      dao.findPriser(whiskyId = productId)
+      val whiskyId = whisky.id
+      dao.findPriser(whiskyId = whiskyId)
+    }
+  }
+
+  fun whiskynavn(): DataFetcher<Any>? {
+    return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
+      val whisky: Whisky = dataFetchingEnvironment.getSource()
+      whisky.varenavn
+    }
+  }
+
+  fun destilleri(): DataFetcher<Any>? {
+    return DataFetcher { dataFetchingEnvironment: DataFetchingEnvironment ->
+      val whisky: Whisky = dataFetchingEnvironment.getSource()
+      whisky.produsent
     }
   }
 

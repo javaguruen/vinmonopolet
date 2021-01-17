@@ -10,7 +10,6 @@ data class Pris(
     val pris: Double,
     val literpris: Double,
     val produktutvalg: String,
-    val butikkategori: String,
     val updated: LocalDateTime
 )
 
@@ -60,8 +59,3 @@ data class LatestProductchange(
     val priceChangeKr: Double?,
     val priceChangePercent: Double?
 )
-
-//2014-10-22T00:56:50;1101;L�iten Linie;0,70;399,90;571,30;
-//Akevitt;Basisutvalget;Butikkategori 3;
-//0;0;0;0;0;;;;;;;Norge;�vrige;�vrige;;Poteter, krydder;16 mnd p� fat;
-// 41,50;5,00;Ukjent;;;Arcus AS;Vectura AS;Engangsflasker av glass;;http://www.vinmonopolet.no/vareutvalg/varedetaljer/sku-1101
