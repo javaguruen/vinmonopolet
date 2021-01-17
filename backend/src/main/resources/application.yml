@@ -20,7 +20,9 @@ server:
 
 ---
 spring:
-  profiles: h2
+  config:
+    activate:
+      on-profile: h2
 
   datasource:
     url: jdbc:h2:mem:testdb;MODE=PostgreSQL
