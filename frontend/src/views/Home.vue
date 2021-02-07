@@ -2,12 +2,12 @@
   <div class="home">
     <h2>{{products.length}} endringer ({{sistEndret}})</h2>
       <b-table striped responsive :items="products" :fields="fields">
-  /*             :sort-by.sync="sortBy"
-               :sort-desc.sync="sortDesc" :sort-compare-options="{ numeric: true, sensitivity: 'base' } "
-    */
         <!-- A virtual composite column -->
         <template slot="change" slot-scope="data">
           <font-awesome-icon :icon=findChangeIcon(data.item.priceChangeKr)></font-awesome-icon>
+        </template>
+        <template slot="varenavn" slot-scope="data">
+          <router-link :to="{ name: 'whiskydetails', params: { whiskyid: data.item.id } }">{{ data.item.varenavn }}</router-link>
         </template>
         <template slot="price" slot-scope="data">
           {{data.item.price.pris}}
