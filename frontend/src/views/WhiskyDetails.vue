@@ -5,7 +5,6 @@
         <h2>{{this.whisky.varenavn}}</h2>
       </div>
     </div>
-
     <div class='row'>
       <div class="col-6 text-right header">Varenummer: </div>
       <div class="col-6 text-left">{{this.whisky.varenummer}}</div>
@@ -21,6 +20,10 @@
       </div>
     </div>
     <div class='row'>
+      <div class="col-6 text-right header">Volum: </div>
+      <div class="col-6 text-left">{{this.whisky.volum}}</div>
+    </div>
+    <div class='row'>
       <div class="col-6 text-right header">Styrke: </div>
       <div class="col-6 text-left">{{this.whisky.alkohol}}%</div>
     </div>
@@ -28,7 +31,6 @@
       <div class="col-6 text-right header">Pris: </div>
       <div class="col-6 text-left keep-spaces">{{ formatterPris (this.whisky.prices[0].pris )}}</div>
     </div>
-
     <div class='row'>
       <div class="col-6 text-right header">Land: </div>
       <div class="col-6 text-left">{{this.whisky.land}}</div>
@@ -41,7 +43,18 @@
       <div class="col-6 text-right header">Underdistrikt: </div>
       <div class="col-6 text-left">{{this.whisky.underdistrikt}}</div>
     </div>
-
+    <div v-if='this.whisky.raastoff !== "" '>
+      <div class='row'>
+        <div class="col-6 text-right header">Råstoff: </div>
+        <div class="col-6 text-left">{{this.whisky.raastoff}}</div>
+      </div>
+    </div>
+    <div v-if='this.whisky.metode !== "" '>
+      <div class='row'>
+        <div class="col-6 text-right header">Metode: </div>
+        <div class="col-6 text-left">{{this.whisky.metode}}</div>
+      </div>
+    </div>
     <div class='row'>
       <div class="col-6 text-right header">Farge: </div>
       <div class="col-6 text-left">{{this.whisky.farge}}</div>

@@ -21,10 +21,10 @@
 
         <h2 v-if="whiskiesFound !== undefined" >Search result ({{whiskies.length}})</h2>
         <b-table v-if="whiskiesFound" striped responsive :items="whiskies" :fields="fields">
-          /*             :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc" :sort-compare-options="{ numeric: true, sensitivity: 'base' } "
-          */
           <!-- A virtual composite column -->
+          <template slot="varenavn" slot-scope="data">
+            <router-link :to="{ name: 'whiskydetails', params: { whiskyid: data.item.id } }">{{ data.item.varenavn }}</router-link>
+          </template>
           <template slot="change" slot-scope="data">
             <font-awesome-icon :icon=findChangeIcon(data.item.priceChangeKr)></font-awesome-icon>
           </template>
