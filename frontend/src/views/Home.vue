@@ -4,7 +4,7 @@
       <b-table striped responsive :items="products" :fields="fields">
         <!-- A virtual composite column -->
         <template slot="change" slot-scope="data">
-          <font-awesome-icon :icon=findChangeIcon(data.item.priceChangeKr)></font-awesome-icon>
+          <font-awesome-icon :icon=findChangeIcon(data.item.priceChangeKr) alt=""></font-awesome-icon>
         </template>
         <template slot="varenavn" slot-scope="data">
           <router-link :to="{ name: 'whiskydetails', params: { whiskyid: data.item.id } }">{{ data.item.varenavn }}</router-link>
@@ -28,12 +28,12 @@ export default {
     return {
       fields: [
         { key: 'change', label: 'Change' },
-        { key: 'priceChangeKr', label: 'Prisendring(kr)', sortable: true, sortByFormatted: true, formatter: (p, key, item) => (p == null) ? '---' : p.toFixed(2) },
-        { key: 'priceChangePercent', label: 'Prisendring(%)', sortable: true, sortByFormatted: true, formatter: (p, key, item) => (p == null) ? '---' : p.toFixed(2) },
+        { key: 'priceChangeKr', label: 'Prisendring(kr)', sortable: true, sortByFormatted: true, formatter: (p) => (p == null) ? '---' : p.toFixed(2) },
+        { key: 'priceChangePercent', label: 'Prisendring(%)', sortable: true, sortByFormatted: true, formatter: (p) => (p == null) ? '---' : p.toFixed(2) },
         { key: 'varenavn', label: 'Navn', sortable: true },
-        { key: 'price.pris', label: 'Pris', sortable: true, sortByFormatted: true, formatter: (p, key, item) => p.toFixed(2) },
+        { key: 'price.pris', label: 'Pris', sortable: true, sortByFormatted: true, formatter: (p) => p.toFixed(2) },
         'volum',
-        { key: 'price.literpris', label: 'Literpris', sortable: true, formatter: (p, key, item) => p.toFixed(2) },
+        { key: 'price.literpris', label: 'Literpris', sortable: true, formatter: (p) => p.toFixed(2) },
         { key: 'produsent', label: 'produsent', sortable: true }
       ],
       sistEndret: '',

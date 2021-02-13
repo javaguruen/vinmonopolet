@@ -1,6 +1,7 @@
 package no.hamre.polet.resources
 
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -29,13 +30,23 @@ class ProductResource(val service: ProductDataService, @Value("defaultUrl") val 
     method = [RequestMethod.PUT],
     produces = [MediaType.APPLICATION_JSON_VALUE]
   )
-  @ApiResponses(
-    value = [
+/*
+  @Operation(
+    summary = "Triggers an update from vinmonopolet.no",
+    responses = [
       ApiResponse(
         responseCode = "200", description = "Successfully persisted.",
         content = [Content(schema = Schema(implementation = Long::class))]
       )
     ]
+  )
+*/
+  @Operation(summary = "Triggers an update from vinmonopolet.no")
+  @ApiResponses(
+      ApiResponse(
+        responseCode = "200", description = "Successfully persisted standalone @ApiResponse.",
+        content = [Content(schema = Schema(implementation = Long::class))]
+      )
   )
   fun downloadFromApi(): ResponseEntity<DownloadResult> {
     log.info("PUT /products/scrape")

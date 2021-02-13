@@ -28,7 +28,7 @@
         <java.version>14</java.version>
         <junit-jupiter-api.version>5.7.0</junit-jupiter-api.version>
         <kotlin.compiler.jvmTarget>14</kotlin.compiler.jvmTarget>
-        <kotlin.version>1.4.21</kotlin.version>
+        <kotlin.version>1.4.30</kotlin.version>
         <logback.version>1.2.3</logback.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>

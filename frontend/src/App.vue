@@ -4,7 +4,7 @@
 
       <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-      <b-navbar-brand to="/"><img src="@/assets/Glencairn.png" width="16px"/> Polet</b-navbar-brand>
+      <b-navbar-brand to="/"><img src="@/assets/Glencairn.png" width="16px" alt=""/> Polet</b-navbar-brand>
 
       <b-collapse is-nav id="nav_collapse">
 
