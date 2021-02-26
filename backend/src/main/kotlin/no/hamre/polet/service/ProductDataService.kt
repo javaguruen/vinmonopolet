@@ -13,10 +13,10 @@ import java.time.LocalDate
 interface ProductDataService {
   fun findLatestReleases(): List<Whisky>
 
-  fun updateFromApi(): DownloadResult
+  fun updateFromApi(): Oppdateringsstatus
 
-  fun findProductById(productId: Long): Whisky?
-  fun findProducts(q: String): List<Whisky>
+  fun findWhiskyById(productId: Long): Whisky?
+  fun findWhiskies(q: String): List<Whisky>
   fun findAllProduct(): List<Whisky>
   fun findProductByReleaseDate(): List<ProductRelease>
 }
@@ -32,7 +32,7 @@ class ProductDataServiceImpl(
     return products.map { p -> p.copy(prices = dao.findPriser(p.id)) }
   }
 
-  override fun updateFromApi(): DownloadResult {
+  override fun updateFromApi(): Oppdateringsstatus {
     var whiskies = 0
     var success = 0
     var failure = 0
@@ -72,14 +72,14 @@ class ProductDataServiceImpl(
       start += batchSize
     }
     log.info("Done downloading from API, $whiskies whiskies $failure failed and $success succeeded")
-    return DownloadResult(
-        total = totalProducts,
-        success = success,
-        whiskies = whiskies,
-        failure = failure,
-        added = added,
-        priceChanges = priceChanges,
-        errors = errors)
+    return Oppdateringsstatus(
+        totalt = totalProducts,
+        vellykket = success,
+        whiskier = whiskies,
+        feil = failure,
+        lagtTil = added,
+        prisendringer = priceChanges,
+        feilmeldinger = errors)
   }
 
   data class UpdateStat(val added: Boolean, val priceChanged: Boolean)
@@ -111,12 +111,12 @@ class ProductDataServiceImpl(
     }
   }
 
-  override fun findProductById(productId: Long): Whisky? {
+  override fun findWhiskyById(productId: Long): Whisky? {
     val product = dao.findById(productId)
     return product?.let { p -> p.copy(prices = dao.findPriser(p.id)) }
   }
 
-  override fun findProducts(q: String): List<Whisky> {
+  override fun findWhiskies(q: String): List<Whisky> {
     return dao.search(q)
   }
 
@@ -132,13 +132,13 @@ class ProductDataServiceImpl(
   }
 }
 
-data class DownloadResult
+data class Oppdateringsstatus
 (
-    val total: Int,
-    val whiskies: Int,
-    val success: Int,
-    val failure: Int,
-    val added: Int,
-    val priceChanges: Int,
-    val errors: List<String>
+  val totalt: Int,
+  val whiskier: Int,
+  val vellykket: Int,
+  val feil: Int,
+  val lagtTil: Int,
+  val prisendringer: Int,
+  val feilmeldinger: List<String>
 )

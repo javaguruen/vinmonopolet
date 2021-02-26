@@ -12,11 +12,15 @@ logging:
   level:
     root: info
     liquibase: debug
+
 vinmonopolet:
   url: https://apis.vinmonopolet.no
   apiKey: ""
 server:
   port: 8000
+
+springdoc:
+  pathsToMatch: /api/v1/**
 
 ---
 spring:
