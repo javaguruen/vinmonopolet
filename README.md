@@ -8,7 +8,11 @@
    * Kotlin 1.4.10
    * Java 14
    * Jackson 2.11.3
-   
+  
+## 0.6.0
+* Refactor API
+* Java 15
+
 # Running locally
 Currently a local Postgresql database is required.
 
@@ -29,3 +33,8 @@ GRANT ALL PRIVILEGES ON DATABASE polet to polet;
 Easiest way to do frontend development is to run vue by itself.
 `frontend> npm run serve`
 and run backend with IntelliJ. Application is then available at http://localhost:8001
+
+## API documentation
+OpenAPI 3.0 documentation availablie at http://localhost:8000/v3/api-docs
+Redoc: http://localhost:8000/redoc.html
+Swagger-ui: http://localhost:8000/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config

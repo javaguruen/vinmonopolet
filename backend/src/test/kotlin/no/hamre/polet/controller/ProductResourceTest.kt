@@ -1,4 +1,4 @@
-package no.hamre.polet.resources
+package no.hamre.polet.controller
 
 import no.hamre.polet.dao.PoletDao
 import org.junit.jupiter.api.Test

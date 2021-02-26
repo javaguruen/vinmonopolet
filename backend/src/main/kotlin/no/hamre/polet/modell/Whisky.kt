@@ -1,5 +1,6 @@
 package no.hamre.polet.modell
 
+import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
 
 data class Pris(

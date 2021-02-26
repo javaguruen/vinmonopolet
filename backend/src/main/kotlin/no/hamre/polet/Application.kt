@@ -1,28 +1,73 @@
 package no.hamre.polet
 
-import org.springframework.beans.factory.annotation.Value
+import io.swagger.v3.oas.models.ExternalDocumentation
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Info
+import io.swagger.v3.oas.models.info.License
+import io.swagger.v3.oas.models.servers.Server
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 
 
-@SpringBootApplication
+//@SpringBootApplication
+@Configuration
+@EnableAutoConfiguration
+@ComponentScan
 class Application
 
 fun main(args: Array<String>) {
-  //runApplication<AppApplication>(*args)
   SpringApplication.run(Application::class.java, *args)
 }
 
 @Configuration
-@EnableAutoConfiguration
+class OasConfiguration() {
+
+  @Bean
+  fun openAPIInfo(): OpenAPI {
+    return OpenAPI()
+      .info(
+        Info().title("Whiskyer på polet")
+          .description("Oversikt over whiskyer på vinmonopolet.no og deres prisutvikling")
+          .version("v0.5.0")
+          .license(
+            License().name("Apache 2.0")
+              .url("https://polet.herokuapp.com")
+          )
+      )
+      .externalDocs(
+        ExternalDocumentation()
+          .description("Github")
+          .url("https://github.com/javaguruen/vinmonopolet")
+      )
+      .servers(
+        listOf(
+          Server()
+            .description("Local Spring Boot")
+            .url("http://localhost:8000/"),
+          Server()
+            .description("Local Node")
+            .url("http://localhost:4000/"),
+          Server()
+            .description("Production at Heroku")
+            .url("https://polet.herokuapp.com/"),
+
+          )
+      )
+  }
+}
+/*
+
+@Validated
 @ConfigurationProperties(prefix = "vinmonopolet")
-data class Config(
-  @Value("\${vinmonopolet.url}") val url: String,
-  @Value("\${vinmonopolet.apiKey}") val apiKey: String
+data class SampleProperties(
+  val url: String,
+  val apiKey: String
 )
+*/
+
 
 /*
     val dataSource = when (config.useH2Database) {

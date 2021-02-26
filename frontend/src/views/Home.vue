@@ -55,7 +55,7 @@ export default {
       return 'angle-double-down'
     },
     getLatest: function () {
-      axios.get(`/api/v1/whiskies/latest`)
+      axios.get(`/api/v1/releases/latest`)
         .then(response => {
           // JSON responses are automatically parsed.
           this.response = response.data
