@@ -61,7 +61,7 @@ export default {
           this.response = response.data
           this.products = response.data
           const dates = this.products.flatMap(prod => prod.price).map(price => new Date(price.datotid.substring(0, 10)))
-          console.log('Dates: ' + dates)
+          // console.log('Dates: ' + dates)
           this.sistEndret = new Date(Math.max.apply(null, dates)).toISOString().slice(0, 10)
         })
         .catch(e => {

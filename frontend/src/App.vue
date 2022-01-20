@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     doSearch () {
-      console.log('Query: ' + this.query)
+      // console.log('Query: ' + this.query)
       axios.get(`/api/v1/search?q=` + this.query)
         .then(response => {
           // JSON responses are automatically parsed.
